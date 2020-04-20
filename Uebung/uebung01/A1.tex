@@ -1,0 +1,51 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% compile with
+%
+%  pdflatex A1.tex
+%  pdflatex A1.tex
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[11pt]{article}
+
+\setlength{\parindent}{0cm}
+\usepackage[english]{babel}
+\usepackage[a4paper]{geometry}
+
+\usepackage[english]{babel}
+\usepackage[a4paper]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{color}
+\usepackage{hyperref}
+
+\begin{document}
+
+\title{
+Beispiel \LaTeX-Dokument f\"ur A1
+}
+
+\author{
+  Marcus P
+}
+
+\date{\today}
+\maketitle
+
+\section{I/O und Funktionsanwendung f\"ur einen bin\"aren Datensatz}
+
+Wir betrachten den Datensatz ``dataset2'' unter \url{link-to-dataset2}. In Bild \ref{fig:1} zeigen wir die Originaldaten auf der x-Achse und
+\begin{align}
+  y &= f(x) =\sin\left( x \right)
+  \label{eq:1}
+\end{align}
+auf der y-Achse.
+\begin{figure}[htpb]
+  \centering
+  \includegraphics[width=0.7\textwidth]{./dataset2_sin.eps}
+  \caption{$\sin$-Funktion angewendet auf die Daten dataset2.}
+  \label{fig:1}
+\end{figure}
+
+\end{document}

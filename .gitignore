@@ -1,0 +1,17 @@
+#Compiled source code
+*.o
+*.exe
+
+#Packages
+*.zip
+*.gz
+*.7z
+
+#logs
+*.log
+
+#data files
+*.mp4
+*.pdf
+
+

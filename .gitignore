@@ -2,6 +2,10 @@
 *.o
 *.exe
 
+#Latex code
+*.aux
+*.out
+
 #Packages
 *.zip
 *.gz

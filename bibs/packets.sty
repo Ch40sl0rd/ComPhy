@@ -1,0 +1,54 @@
+\ProvidesPackage{edv_pakete}[2018/11/07 v0.6 EDV Style]
+
+\KOMAoptions{fontsize=12pt, paper=a4}	%Schriftgroesse und Papierformat
+\KOMAoptions{DIV=12} %Beschreibbarer Berich, bzw Abstand vom Rand
+\KOMAoptions{listof=totoc}
+
+\RequirePackage[utf8]{inputenc} %Erkennung von deutschen Sonderzeichen und utf8 Zeichensatz
+\RequirePackage[T1]{fontenc} %Darstellung von schoeneren Zeichensatzen
+\RequirePackage[autostyle=true]{csquotes} %Anfuerungszeichen passen sich automatisch an Sprache an
+\RequirePackage{babel}
+\RequirePackage{graphicx} %Einbindung von Bildern und Grafiken
+\graphicspath{{pics/}} %Dateipfad der Bilder
+\RequirePackage{amsmath} %Mathemodul fuer viele voreingestellte mathemtische Funktionen
+\RequirePackage{xfrac} %Schoenere Bruchdarstellung
+\RequirePackage{physics} %Physikalische Einheiten
+\RequirePackage{siunitx}	%Paket fuer einheitliche Darstellung von Einheiten
+\sisetup{locale = DE}  % Deutsch als locale für die Zahlen und Einheiten
+\RequirePackage[varg]{txfonts} %times inspired font fuer mathemodus
+\RequirePackage{listings} %Import von Codezeilen in Latex
+\RequirePackage{xcolor}	%schönere Farbdarstellung
+\RequirePackage[backend=biber, style=numeric]{biblatex} %Bibliographie-Packet
+\RequirePackage{hyperref} %Verlinkungen innerhalb des Dokuments
+\RequirePackage[all]{hypcap}
+
+%Einstellungen für listing-Packet
+\lstset{
+	basicstyle=\ttfamily,    
+	literate={~} {$\sim$}{1} % set tilde as a literal
+	{ö}{{\"o}}1
+	{ä}{{\"a}}1
+	{ü}{{\"u}}1
+	{ß}{{\ss}}1
+	{Ö}{{\"O}}1
+	{Ä}{{\"A}}1
+	{Ü}{{\"U}}1
+}
+
+% Farben für Code-Syntaxhighlighting und Weiteres festlegen:
+\lstset{
+	%automatische Zeilenumbrüche
+	breaklines=true,
+	%nummerierung der Zeilen im Code
+	numbers=left,
+	%Umrandung für Code-Blöcke
+	frame=single,   
+	% Keine besondere Markierung für Leerzeichen in Codes
+	showspaces=false,               
+	showstringspaces=false,  
+	% Farebn für Code-Kommentare und Schlüsselworte:
+	commentstyle=\color{red},       % comment style
+	keywordstyle=\color{blue},      % keyword style
+	%farbhervorhebung für strings
+	stringstyle=\color{green}
+}

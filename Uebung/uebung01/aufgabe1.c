@@ -12,11 +12,46 @@
     @list (out): list of all data points.
 */
 double* read_data_file(char* const filename, int *length, int binary){
+    FILE *file =NULL;
+    double* data;
+    int reads, error;
     if(filename==NULL){
         printf("Kein Dateiname angegeben.\n");
         return NULL;
     }
-    FILE *file = fopen(filename, "r");
+    if(binary){
+        //reading all the binary data from file
+        file = fopen(filename, "rb");
+        if(!file){
+            printf("Fehler bei der Öffnung der Datei.\n");
+            exit(2);
+        }
+        reads = fread((void*)length, sizeof(int), 1, file);
+        if(reads!=1){
+            printf("Fehler bei lesen der Länge.\n");
+            exit(3);
+        }
+        printf("Anzahl der Datenpunkte: %d\n", (*length));
+        data = (double*)malloc(sizeof(double)*(*length));
+        reads = fread( (void*)data, sizeof(double), (*length), file);
+        if(reads != (*length)){
+            printf("Fehler bei Lesen der eigentlichen Daten.\n");
+            exit(3);
+        }
+        if(ferror(file) !=0){
+            printf("ferror of file != 0.\n");
+            exit(3);
+        }
+        error = fclose(file);
+        if(error){
+            printf("Error while closing the file.\n");
+            exit(4);
+        }
+        return data;
+
+    }
+    //sonst normales auslesen der Daten
+    file = fopen(filename, "r");
     if(!file){
         printf("Fehler bei der Öffnung der Datei.\n");
         exit(2);
@@ -25,12 +60,12 @@ double* read_data_file(char* const filename, int *length, int binary){
     fscanf(file, "%d\n", length);
     printf("Die Länge der Datei beträgt: %d\n", (*length));
         
-    double *list = (double*)malloc(sizeof(double)*(*length));
+    data = (double*)malloc(sizeof(double)*(*length));
     for(int i=0; i<(*length); i++){
-        fscanf(file, "%lf\n", &list[i]);
+        fscanf(file, "%lf\n", &data[i]);
     }
     fclose(file);
-    return list;
+    return data;
 }
 
 /*
@@ -88,18 +123,44 @@ double* sum_sqr_sum(double* array, int length){
     }
     return ret;
 }
+/*
+*   This function prints pairs of data to a given outpuit-file. The data pairs
+*   consist of (x, fp(x))
+*
+*   @filename (in): name of the output file.
+*   @data (in): data to be printed.
+*   @length (in): number of data points.
+*   @fp (in): function to be applied to the data.
+*/
+void print_data2file_func(char*filename,  double *data, int length , double(*fp)(double)){
+    FILE *file_out = fopen(filename, "w");
+    if(!file_out){
+        printf("Error while openig the file.\n");
+        exit(2);
+    }
+    for(int i=0; i<length; i++){
+        fprintf(file_out, "%le\t%le\n", data[i], fp(data[i]));
+    }
+    fclose(file_out);
+}
 
 int main(){
-    char* filename = "dataset1";
+    char* filename1 = "dataset1";
+    char *filename2 = "dataset2";
     char* file_ausgabe = "ausgabe.txt";
-    FILE *file_in = fopen(filename, "r");
-    int length;
+    int length1, length2;
 
-    double *list_data = read_data_file(filename, &length, 0);
-    print_data_file(NULL, list_data, length);
-    double *list_sum = sum_sqr_sum(list_data, length);
-    print_data_file(file_ausgabe, list_sum, length);
+    double *list_data = read_data_file(filename1, &length1, 0);
+    double *list_bin_data = read_data_file(filename2, &length2, 1);
+    double *list_sum = sum_sqr_sum(list_data, length1);
+
+    print_data_file(NULL, list_data, length1);
+    print_data_file(NULL, list_bin_data, length2);
+
+    print_data_file(file_ausgabe, list_sum, length1);
+
+    print_data2file_func("ausgabe2.txt", list_bin_data, length2, sin);
 
     free(list_data);
-    fclose(file_in);
+    free(list_bin_data);
 }

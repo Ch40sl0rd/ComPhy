@@ -1,5 +1,6 @@
-#include <stdio.h>
-#include <stdlib.h>
+#ifndef FILEHELPERS_h
+#define FILEHELPERS_H
+
 
 /*
 *   This function prints a dataset to a file or stdout if filename ist NULL
@@ -8,32 +9,7 @@
 *   @data (in): data to be printed to the destination.
 *   @length (in): number of datapoints to be printed.
 */
-void print_data_file(char* filename,double *data, int length){
-    if(data==NULL){
-        printf("compromised data given, abort workflow!\n");
-        exit(2);
-    }
-    FILE *file;
-    if(filename==NULL){
-        file = stdout;
-    }
-    else{
-        file = fopen(filename, "w");
-    }
-
-    if(!file){
-        printf("File could not be created!\n");
-        exit(3);
-    }
-
-    for(int i=0; i<length; i++){
-        fprintf(file, "%le\n", data[i]);
-    }
-    if(file!=stdout){
-        fclose(file);
-    }
-    
-}
+void print_data_file(char* filename,double *data, int length);
 
 /*
 *   This function prints pairs of data to a given outpuit-file. The data pairs
@@ -44,17 +20,7 @@ void print_data_file(char* filename,double *data, int length){
 *   @length (in): number of data points.
 *   @fp (in): function to be applied to the data.
 */
-void print_data2file_func(char*filename,  double *data, int length , double(*fp)(double)){
-    FILE *file_out = fopen(filename, "w");
-    if(!file_out){
-        printf("Error while openig the file.\n");
-        exit(2);
-    }
-    for(int i=0; i<length; i++){
-        fprintf(file_out, "%le\t%le\n", data[i], fp(data[i]));
-    }
-    fclose(file_out);
-}
+void print_data2file_func(char*filename,  double *data, int length , double(*fp)(double));
 
 /*
     This function creates a data array form a given file list, the length
@@ -65,59 +31,5 @@ void print_data2file_func(char*filename,  double *data, int length , double(*fp)
 
     @list (out): list of all data points.
 */
-double* read_data_file(char* const filename, int *length, int binary){
-    FILE *file =NULL;
-    double* data;
-    int reads, error;
-    if(filename==NULL){
-        printf("Kein Dateiname angegeben.\n");
-        return NULL;
-    }
-    if(binary){
-        //reading all the binary data from file
-        file = fopen(filename, "rb");
-        if(!file){
-            printf("Fehler bei der Öffnung der Datei.\n");
-            exit(2);
-        }
-        reads = fread((void*)length, sizeof(int), 1, file);
-        if(reads!=1){
-            printf("Fehler bei lesen der Länge.\n");
-            exit(3);
-        }
-        printf("Anzahl der Datenpunkte: %d\n", (*length));
-        data = (double*)malloc(sizeof(double)*(*length));
-        reads = fread( (void*)data, sizeof(double), (*length), file);
-        if(reads != (*length)){
-            printf("Fehler bei Lesen der eigentlichen Daten.\n");
-            exit(3);
-        }
-        if(ferror(file) !=0){
-            printf("ferror of file != 0.\n");
-            exit(3);
-        }
-        error = fclose(file);
-        if(error){
-            printf("Error while closing the file.\n");
-            exit(4);
-        }
-        return data;
-
-    }
-    //sonst normales auslesen der Daten
-    file = fopen(filename, "r");
-    if(!file){
-        printf("Fehler bei der Öffnung der Datei.\n");
-        exit(2);
-    }
-
-    fscanf(file, "%d\n", length);
-    printf("Die Länge der Datei beträgt: %d\n", (*length));
-        
-    data = (double*)malloc(sizeof(double)*(*length));
-    for(int i=0; i<(*length); i++){
-        fscanf(file, "%lf\n", &data[i]);
-    }
-    fclose(file);
-    return data;
-}
+double* read_data_file(char* const filename, int *length, int binary);
+#endif

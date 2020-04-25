@@ -1,77 +1,68 @@
-#include <stdio.h>
+#ifndef ARRAYHELPERS_H
+#define ARRAYHELPERS_H
 
-void array_ausgabe(int* array, const int length, int option){
-    if(option == 1){
-        for(int i = 0; i < length; i++){
-            printf("%d \n", array[i]);
-        }
-    }
-    else if(option == 2){
-        for(int i = 0; i < length-1; i++){
-            printf("%d;", array[i]);
-        }
-        printf("%d\n", array[length-1]);
-    }
-    else{
-        printf("ERROR. Bitte wähle eine mögliche Ausgabe mit  1 für Zeilenweise und 2 für komma-getrennte Werte.\n");
-    }
-}
+/*
+*   This function prints an array of int-data to stdout either in line
+*   or one data point per line.
+*   
+*   @array (in): list of data to be printed.
+*   @length (in): number of datapoints.
+*   @option (in): 1 for line-seperated values, 2 for semicolon-spereated values
+*/
+void array_ausgabe(int* array, const int length, int option);
 
-void array_init_std(int* array, int length){
-    for(int i = 0; i<length; i++){
-        array[i] = i+1;
-    }
-}
+/*
+*   This function initilizes a list of int data with rising values
+*   @length (in): number of datapoints
+*
+*   @array (out): array with all the data_points.
+*/
+int* array_init_std(int length);
 
-void array_init_value(int *array, int length, int value){
-    for(int i=0; i<length; i++){
-        array[i] = value;
-    }
-}
+/*
+*   This function initilizes an int array with all the same value.
+*
+*   @length (in): number of datapoints
+*   @value (in): value for all datapoints
+*/
+int* array_init_value(int length, int value);
 
-void rotate_1(int *array, const int length){
-    int temp = array[0];
-    for(int i = 0;  i< length-1; i++){
-        array[i] = array[i+1];
-    }
-    array[length-1] = temp;
-}
+/*
+*   This function rotates the array by one
+*
+*   @array (in): array to be rotated.
+*   @length (in): number of datapoints.
+*   
+*/
+void rotate_one(int *array, const int length);
 
-void rotate_k(int *array, const int length, int k){
-    for(int i=0; i<k; i++){
-        rotate_1(array, length);
-    }
-}
+/*
+*   This function rotates the array by a given amount.
+*
+*   @array (in): array to be rotated.
+*   @length (in): number of datapoints.
+*   @k (in): number of rotations to be executed
+*/
+void rotate_k(int *array, const int length, int k);
 
-void turn_array(int *array, const  int length){
-    int  temp;
-    for (int i=0; i<length/2.;i++){
-        temp = array[i];
-        array[i] = array[length-1-i];
-        array[length-1-i] =  temp;
-    }
-}
+/*
+*   This function turns a given array around.
+*
+*   @array (in): array to be turned.
+*   @length (in): number of datapoints.
+*/
+void turn_array(int *array, const  int length);
 
-int search_array(int* array1, int length1, int* array2, int length2){
-    //This function searches for the position of array 1 in array 2.
-    int n = 0;
-    while(array2[0] != array1[n]){
-        n++;
-        if( (n-1) == length1){
-            return -1;
-        }
-    }
-    for(int i = 0; i<length2; i++){
-        if(array2[i] != array1[i+n]){
-            return -1;
-        }
-    }
+int search_array(int* array1, int length1, int* array2, int length2);
 
-    return n;
-}
+/*
+*   This function swaps two elements of a given array in place.
+*
+*   @array (in): array to be turned.
+*   @length (in): number of datapoints.
+*   @k1 (in): position of the first element.
+*   @k2 (in): position of the second element.
+*/
+void swap_pos(int* array, int length,  int k1, int k2);
 
-void swap_pos(int* array, int length,  int k1, int k2){
-    int temp = array[k1];
-    array[k1]  =  array[k2];
-    array[k2] = temp;
-}
+#endif

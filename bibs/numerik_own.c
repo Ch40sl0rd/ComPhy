@@ -1,45 +1,13 @@
-#include <stdlib.h>
 #include <stdio.h>
-#include <math.h>
-
-/*
-*   This function calculates the first symmetric derivation of a given function.
-*   x (in): point to calculate the value at
-*   h (in): distance for the derivation
-*   func (in): function to calculate the derivation to.
-*
-*   return: value of the first derivation at position x.
-*/
 double derivate_sym_one(double x, double h, double(*func)(double)){
     return (func(x+h)-func(x-h))/(2*h);
 }
 
-/*
-*   This function calculates the second symmetric derivation of a given function.
-*   x (in): point to calculate the value at
-*   h (in): distance for the derivation
-*   func (in): function to calculate the derivation to.
-*
-*   return: value of the second derivation at position x.
-*/
 double derivate_sym_two(double x, double h, double(*func)(double)){
     return (func(x+h) + func(x-h) -2*func(x))/(h*h);
 }
-
-/*
-*   This function calculates the third symmetric derivation of a given function.
-*   x (in): point to calculate the value at
-*   h (in): distance for the derivation
-*   func (in): function to calculate the derivation to.
-*
-*   return: value of the third derivation at position x.
-*/
 double derivate_sym_three(double x, double h, double(*func)(double)){
     return ( (func(x+2*h) - func(x-2*h)) -2*(func(x+h) - func(x-h)) )/(2*h*h*h);
-}
-
-double f(double x, void *p){
-    return sin(x)*cos(x)*exp(x);
 }
 
 double zero_crossing(double (*func)(double, void*), const double x0, const double x1, double acc, void *p){
@@ -108,41 +76,4 @@ double gamma_func(double z){
     b = 10*z;
     acc = 1e-8;
     return (integrate_trapez_adap(&gamma_integrand, a, b, acc, (void*)(&z)));
-}
-
-int main(){
-    double x = 1.;
-    double h = 0.5;
-    double exact, calc, diff;
-    exact = exp(x);
-    do{
-        calc = derivate_sym_three(x, h, &exp);
-        diff = fabs(calc - exact);
-        printf("point       exact       calculated      diff\n");
-        printf("%6.4e  %15.6e  %15.6e  %15.6e\n", x, exact, calc, diff);
-        printf("Mit der Schrittweite H=%15.6e\n", h);
-        h *=0.5;
-    }
-    while(diff>1e-6);
-    double res = zero_crossing(&f, 1.1, 1.3 , 1e-8, NULL);
-    printf("Die Nullstelle von f ist %15.6e\n", res);
-    
-
-    //Integration testen
-    double h_n, a, b; //Schrittweite, Anfang, Ende
-    a = 0.;
-    b = 1.;
-    int n; //Anzahl der Zwischenschritte
-    for(n=10; n<=1000; n+=10){
-        h_n = (b-a)/(n-1);
-        printf("Das Integral von exp(x) von %lf bis %lf ist %15.6e.\n",a , b,  integrate_trapez(&f, a ,b, h_n, NULL));
-        printf("Mit Schrittweite %lf\n", h_n);
-    }
-
-    //Neue Integralsfunktion testen.
-    printf("Das Integral von %lf bis %lf ist %15.6e\n",a, b, integrate_trapez_adap(&f, a, b, 1e-8, NULL));
-
-    double z = 10.7;
-    printf("Der Wert der Gammafunktion von %lf beträgt %15.6e\n", z, gamma_func(z));
-    return 0;
 }

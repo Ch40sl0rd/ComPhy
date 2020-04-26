@@ -1,13 +1,13 @@
 #include <stdio.h>
-double derivate_sym_one(double x, double h, double(*func)(double)){
-    return (func(x+h)-func(x-h))/(2*h);
+double derivate_sym_one(double x, double h, double(*func)(double, void*), void* p){
+    return (func(x+h, p)-func(x-h, p))/(2*h);
 }
 
-double derivate_sym_two(double x, double h, double(*func)(double)){
-    return (func(x+h) + func(x-h) -2*func(x))/(h*h);
+double derivate_sym_two(double x, double h, double(*func)(double, void*), void* p){
+    return (func(x+h, p) + func(x-h, p) -2*func(x, p))/(h*h);
 }
-double derivate_sym_three(double x, double h, double(*func)(double)){
-    return ( (func(x+2*h) - func(x-2*h)) -2*(func(x+h) - func(x-h)) )/(2*h*h*h);
+double derivate_sym_three(double x, double h, double(*func)(double, void*), void*p){
+    return ( (func(x+2*h, p) - func(x-2*h, p)) -2*(func(x+h, p) - func(x-h, p)) )/(2*h*h*h);
 }
 
 double zero_crossing(double (*func)(double, void*), const double x0, const double x1, double acc, void *p){

@@ -9,7 +9,7 @@
 *
 *   return: value of the first derivation at position x.
 */
-double derivate_sym_one(double x, double h, double(*func)(double));
+double derivate_sym_one(double x, double h, double(*func)(double, void*), void* p);
 
 /*
 *   This function calculates the second symmetric derivation of a given function.
@@ -19,7 +19,7 @@ double derivate_sym_one(double x, double h, double(*func)(double));
 *
 *   return: value of the second derivation at position x.
 */
-double derivate_sym_two(double x, double h, double(*func)(double));
+double derivate_sym_two(double x, double h, double(*func)(double, void*), void* p);
 
 /*
 *   This function calculates the third symmetric derivation of a given function.
@@ -29,7 +29,7 @@ double derivate_sym_two(double x, double h, double(*func)(double));
 *
 *   return: value of the third derivation at position x.
 */
-double derivate_sym_three(double x, double h, double(*func)(double));
+double derivate_sym_three(double x, double h, double(*func)(double, void*), void* p);
 
 /*
 *   This function calculates the position of the zero crossings of

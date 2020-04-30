@@ -9,7 +9,7 @@
 *   @data (in): data to be printed to the destination.
 *   @length (in): number of datapoints to be printed.
 */
-void print_data_file(char* filename,double *data, int length);
+void print_data2file(char* filename,double *data, int length);
 
 /*
 *   This function prints pairs of data to a given outpuit-file. The data pairs

@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void print_data_file(char* filename,double *data, int length){
+void print_data2file(char* filename,double *data, int length){
     if(data==NULL){
         printf("compromised data given, abort workflow!\n");
         exit(2);

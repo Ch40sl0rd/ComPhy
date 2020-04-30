@@ -3,7 +3,7 @@ CC := gcc -g -ggdb -Wall -Wpedantic -std=c99
 #Linker für fertige Programme
 LD := gcc
 #benötigte Bibliotheken
-BIBS := -lm 
+BIBS := -lm -lgsl -lblas
 
 # alle Programmnamen, hier per Hand aufgelistet, muss manuell genändert werden
 PROGRAMS := test
@@ -35,7 +35,7 @@ list-variables:
 
 # Regel zum Verlinken der ganzen Programme
 $(PROGRAMS): % : %.o $(MODULES)
-	$(LD) -o $@ $^
+	$(LD) -o $@ $^ $(BIBS)
 
 # die Programmobjekte haben andere Abhaengigkeiten als die Modulobjekte
 # im letzten Feld machen wir aus programmN.o programmN.c um auf die Quelltextdatei
@@ -46,7 +46,7 @@ $(PROGRAMS): % : %.o $(MODULES)
 # https://stackoverflow.com/questions/25611945/getting-the-target-name-in-a-function-in-prerequisites-list-makefile
 .SECONDEXPANSION:
 $(addsuffix .o, $(PROGRAMS)): % : $$(addsuffix .c,$$(basename $$(@))) $$(HEADERS) Makefile
-	$(CC) -c -o $@ $< $(BIBS)
+	$(CC) -c -o $@ $<
 
 # Regel zum Kompilieren von Objekten, mit Ausnahme der Programmobjekte, dafuer
 # haben wir ja eine spezielle Regel

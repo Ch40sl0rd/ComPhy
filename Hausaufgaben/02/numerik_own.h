@@ -161,8 +161,8 @@ double gl_integrate(double a, double b, double *x, double *w, int n, double(*f)(
  *  \param dgl_func: function that represents the differential equation. 
  * 
  * *******************************************************************************************************************/
-void euler_step(int neq, double h, double t, double *y, double *f, void *p,
-    void (*dgl_func)(int, double, double*, double*, void*));
+void euler_step(int neq, double h, double t, double *y, double *f,
+    void (*dgl_func)(int, double, double*, double*));
 
 /********************************************************************************************************************
  *  This function implements on step of the runge-kutta-methode of the second order.
@@ -176,8 +176,8 @@ void euler_step(int neq, double h, double t, double *y, double *f, void *p,
  *  \param dgl_func: function that represents the differential equation. 
  * 
  * ********************************************************************************************************************/
-void runge_kutta_2_step(int neq, double h, double t, double *y, double *f, void *p,
-    void (*dgl_func)(int, double, double*, double*, void*));
+void runge_kutta_2_step(int neq, double h, double t, double *y, double *f,
+    void (*dgl_func)(int, double, double*, double*));
 
 /********************************************************************************************************************
  *  This function implements on step of the runge-kutta-methode of the third order.
@@ -191,8 +191,8 @@ void runge_kutta_2_step(int neq, double h, double t, double *y, double *f, void 
  *  \param dgl_func: function that represents the differential equation. 
  * 
  * ********************************************************************************************************************/
-void runge_kutta_3_step(int neq, double h, double t, double *y, double *f, void *p,
-    void (*dgl_func)(int, double, double*, double*, void*));
+void runge_kutta_3_step(int neq, double h, double t, double *y, double *f,
+    void (*dgl_func)(int, double, double*, double*));
 
 /********************************************************************************************************************
  *  This function implements on step of the runge-kutta-methode of the fourth order.
@@ -206,8 +206,8 @@ void runge_kutta_3_step(int neq, double h, double t, double *y, double *f, void 
  *  \param dgl_func: function that represents the differential equation. 
  * 
  * ********************************************************************************************************************/
-void runge_kutta_4_step(int neq, double h, double t, double *y, double *f, void *p,
-    void (*dgl_func)(int, double, double*, double*, void*));
+void runge_kutta_4_step(int neq, double h, double t, double *y, double *f,
+    void (*dgl_func)(int, double, double*, double*));
 
 /*******************************************************************************************************************
  *  This function solves a given differantial euqation in vector noation by apllying either
@@ -224,6 +224,6 @@ void runge_kutta_4_step(int neq, double h, double t, double *y, double *f, void 
  *  \param dgl_func: vector-valued function of the differantiel equation 
  * 
  ***********************************************************************************************************************/
-void solve_dgl(int neq, double start, double stop, double step_size, int number_methode, void *p, double *start_vals,
-                void (*dgl_func)(int, double, double*,double*, void*));
+double** solve_dgl(int neq, double start, double stop, double step_size, int number_methode, double const *start_vals,
+                void (*dgl_func)(int, double, double*,double*));
 #endif

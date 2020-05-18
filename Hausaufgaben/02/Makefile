@@ -6,10 +6,10 @@ CC := gcc -g -ggdb -Wall -Wpedantic -std=c99
 #Linker für fertige Programme
 LD := gcc
 #benötigte Bibliotheken
-BIBS := -lm -lgsl -lblas 
+BIBS := -L./ -lm -lgsl -lblas -lh2_cip
 
 # alle Programmnamen, hier per Hand aufgelistet, muss manuell genändert werden
-PROGRAMS := test
+PROGRAMS := hausaufgabe2
 
 # alle Quelldateien im momentanen Verzeichnis werden aufgelistest per "wildcard"
 SOURCES := $(wildcard *.c)

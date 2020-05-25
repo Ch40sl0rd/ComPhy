@@ -105,4 +105,8 @@ double* create_array_function_double(double* data, double(*func)(double, void*),
 */
 void array_ausgabe_double(double* array, const int length, int option);
 
+double** create_2d_array(int rows, int cols);
+
+void free2d(double **array);
+
 #endif

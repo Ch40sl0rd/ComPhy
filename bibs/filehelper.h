@@ -48,5 +48,5 @@ double* read_data_file(char* const filename, int *length, int binary);
  * */
 void print_data_table_double(char* filename, double *x, double *y, const int length);
 
-void print_table2file(char* const filename, double **table, int cols, int rows);
+void print_table2file(char* const filename, double **table, int rows, int cols);
 #endif

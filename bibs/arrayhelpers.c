@@ -140,3 +140,26 @@ void array_ausgabe_double(double* array, const int length, int option){
     }
     printf("\n");
 }
+
+double** create_2d_array(int rows, int cols){
+    double *values, **ret_array;
+    //allocate 2d array to save values for each step
+    values = (double*)malloc(sizeof(double)*cols*rows);
+    ret_array = (double**)malloc(sizeof(double*)*rows);
+    if(!values || !ret_array){
+        printf("[create_2d_array Error while allocating memory.\n");
+        abort();
+    }
+    for(int i=0; i<rows; i++){
+        ret_array[i] = values+(i*cols);
+    }
+    return ret_array;
+}
+
+void free2d(double **array){
+    if(array==NULL){
+        printf("[free_2d] Can#t free NULL-array.\n");
+        return;
+    }
+    free(array[0]); free(array);
+}

@@ -58,9 +58,8 @@ void print_data_table_double(char* filename, double *x, double *y, const int len
     }
 }
 
-void print_table2file(char* const filename, double **table, int cols, int rows){
+void print_table2file(char* const filename, double **table, int rows, int cols){
     FILE *file_out;
-    char* output;
 
     if(filename==NULL){
         file_out = stdout;

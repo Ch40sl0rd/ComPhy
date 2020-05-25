@@ -21,7 +21,7 @@ double s_func(double x){
 }
 
 double g_func(double x){
-    return 0.0;
+    return 1.0;
 }
 
 /*******************************************************************************************************************************
@@ -50,6 +50,16 @@ double* numerov_init(double start, double end, int steps, double *g, double(*g_f
     return x_array;
 }
 
+/*************************************************************************************
+ *  This function uses numerov's methode to calculate the value of the function f
+ *  which solves the differential equation:
+ *  f(x)'' + g(x)f(x) = s(x)
+ *  This methode starts at the first two values and goes forwards.
+ * 
+ *  \param paramters: paramters to be used by other numerov functions
+ *  \param f_max: value of f at the first point
+ *  \param f_maxm1: value of f at the second point.
+ *************************************************************************************/
 void numerov_up(numerov_param parameters, double f_0, double f_1){
     double fac_u_n, fac_u_nm1, fac_u_np1;
     double fac_s;
@@ -73,6 +83,16 @@ void numerov_up(numerov_param parameters, double f_0, double f_1){
     }
 }
 
+/*************************************************************************************
+ *  This function uses numerov's methode to calculate the value of the function f
+ *  which solves the differential equation:
+ *  f(x)'' + g(x)f(x) = s(x)
+ *  This methode starts at the last two values and goes backwards.
+ * 
+ *  \param paramters: paramters to be used by other numerov functions
+ *  \param f_max: value of f at the last point
+ *  \param f_maxm1: value of f at the penultimate point.
+ *************************************************************************************/
 void numerov_down(numerov_param parameters, double f_max, double f_maxm1){
     double fac_u_n, fac_u_nm1, fac_u_np1;
     double fac_s;
@@ -96,11 +116,35 @@ void numerov_down(numerov_param parameters, double f_max, double f_maxm1){
     }
 }
 
+/*******************************************************************************************
+ *  This function calculates the difference between the current value at the last point
+ *  and the set value at this point. It is mainly used by numerov_complete to find the ideal
+ *  free paramter.
+ * 
+ *  \param free_param: the free parameter at second position to define the ideal function
+ *  \param paramters: parameters for the other numerov_methods
+ *  \param f_0: boundary condition f(start)
+ *  \param f_max: boundary condition f(end)
+ * 
+ *  \return difference betwwen f(start) and f_max
+ * *****************************************************************************************/
 double bound_con_up(double free_param, numerov_param parameters, double f_0, double f_max){
     numerov_up(parameters, f_0, free_param);
     return parameters.f_array[parameters.steps] - f_max;
 }
 
+/*******************************************************************************************
+ *  This function calculates the difference between the current value at the first point
+ *  and the set value at this point. It is mainly used by numerov_complete to find the ideal
+ *  free paramter.
+ * 
+ *  \param free_param: the free parameter at second position to define the ideal function
+ *  \param paramters: parameters for the other numerov_methods
+ *  \param f_0: boundary condition f(start)
+ *  \param f_max: boundary condition f(end)
+ * 
+ *  \return difference betwwen f(start) and f_max
+ * *****************************************************************************************/
 double bound_con_down(double free_param, numerov_param parameters, double f_0, double f_max){
     numerov_down(parameters, f_max, free_param);
     return parameters.f_array[0] - f_0;

@@ -41,9 +41,11 @@ double g_func(double x){
  * *****************************************************************************************************************************/
 double* numerov_init(double start, double end, int steps, double *g, double(*g_func)(double), double *s, double(*s_func)(double) ){
     double* x_array;
-    x_array = create_array_double(start, end, steps);
+    x_array = (double*)malloc(sizeof(double)*steps);
+    double h = (end-start)/(steps-1);
 
     for(int i=0; i<steps; i++){
+        x_array[i] = start + i*h;
         g[i] = g_func(x_array[i]);
         s[i] = s_func(x_array[i]);
     }
@@ -79,7 +81,7 @@ void numerov_up(numerov_param parameters, double f_0, double f_1){
         fac_u_n = 2.0*(1.0 - 5*h*h/12.0*g[i]);
         fac_u_nm1 = 1.0 + h*h/12.0 * g[i-1];
         fac_s = h*h/12.0*(s[i+1]+ 10.0*s[i] + s[i-1]);
-        f[i+1] = 1/fac_u_np1*(fac_s + fac_u_n*f[i] - fac_u_nm1*f[i-1]);
+        f[i+1] = (fac_s + fac_u_n*f[i] - fac_u_nm1*f[i-1])/fac_u_np1;
     }
 }
 
@@ -112,7 +114,7 @@ void numerov_down(numerov_param parameters, double f_max, double f_maxm1){
         fac_u_n = 2.0*(1.0 - 5*h*h/12.0*g[i]);
         fac_u_nm1 = 1.0 + h*h/12.0 * g[i-1];
         fac_s = h*h/12.0*(s[i+1]+ 10.0*s[i] + s[i-1]);
-        f[i-1] = 1/fac_u_nm1*(fac_s + fac_u_n*f[i] - fac_u_np1*f[i+1]);
+        f[i-1] = (fac_s + fac_u_n*f[i] - fac_u_np1*f[i+1])/fac_u_nm1;
     }
 }
 
@@ -130,7 +132,7 @@ void numerov_down(numerov_param parameters, double f_max, double f_maxm1){
  * *****************************************************************************************/
 double bound_con_up(double free_param, numerov_param parameters, double f_0, double f_max){
     numerov_up(parameters, f_0, free_param);
-    return parameters.f_array[parameters.steps] - f_max;
+    return parameters.f_array[parameters.steps-1] - f_max;
 }
 
 /*******************************************************************************************
@@ -147,7 +149,7 @@ double bound_con_up(double free_param, numerov_param parameters, double f_0, dou
  * *****************************************************************************************/
 double bound_con_down(double free_param, numerov_param parameters, double f_0, double f_max){
     numerov_down(parameters, f_max, free_param);
-    return parameters.f_array[0] - f_0;
+    return (parameters.f_array[0] - f_0);
 }
 
 /******************************************************************************************************************************************************************
@@ -163,17 +165,21 @@ double bound_con_down(double free_param, numerov_param parameters, double f_0, d
  
  * *****************************************************************************************************************************************************************/
 double secant_numerov(double x0, double x1, numerov_param parameters, double(*func)(double, numerov_param , double, double), double f_0, double f_max, int steps){
-    const double acc = 1e-12;
-    double x_n;
+    const double acc = 1e-10;
+    double x_n, x_np1, temp;
     int step = 0;
+    x_n = x0;
+    x_np1 = x1;
     do{
-        x_n = x1 - (x1-x0)*func(x1, parameters, f_0, f_max)/(func(x1, parameters, f_0, f_max) - func(x0, parameters, f_0, f_max));
-        x0 = x1;
-        x1 = x_n;
-        steps++;
+        temp = x_np1 - (x_np1-x_n)/(func(x_np1, parameters, f_0, f_max) - func(x_n, parameters, f_0, f_max))*func(x_np1, parameters, f_0, f_max); 
+        printf("Der neue Schätzwert lautet: %15.12e\n", temp);
+        x_n = x_np1;
+        x_np1 = temp;
+        step++;
     }
-    while(fabs(x0-x1)>acc && step<steps);
-    return x1;
+    while(fabs(x_np1 - x_n)>acc && step<steps);
+    printf("Konvergenz erreicht nach %d Schritten.\n", step);
+    return x_np1;
 }
 /*******************************************************************************************************
  *  This function exectues the numerov-methode to solve a differential euqation of the form
@@ -193,7 +199,7 @@ double** numerov_complete(double start, double end , int steps, double (*g_func)
     double *f_array, *g_array, *s_array, *x_array;
     double **data_table;
     double free_param, set_param;
-    numerov_param paramters;
+    numerov_param parameters;
     void (*numerov_func)(numerov_param, double, double);
     double (*bound_con)(double, numerov_param, double, double);
     if(direction==1){
@@ -214,25 +220,33 @@ double** numerov_complete(double start, double end , int steps, double (*g_func)
     g_array = (double*)malloc(sizeof(double)*steps);
     s_array = (double*)malloc(sizeof(double)*steps);
     x_array = numerov_init(start, end, steps, g_array, g_func, s_array, s_func);
-    //allocate memory for values of f(x_n)
+    /**print_data2file(NULL, x_array, steps);
+    print_data2file(NULL, g_array, steps);
+    print_data2file(NULL, s_array, steps);
+    //allocate memory for values of f(x_n)**/
     f_array = (double*)malloc(sizeof(double)*steps);
 
     //create struct with all parameters
-    paramters.f_array = f_array;
-    paramters.g_array = g_array;
-    paramters.s_array = s_array;
-    paramters.steps = steps;
-    paramters.h = (end-start)/(double)(steps-1);
+    parameters.f_array = f_array;
+    parameters.g_array = g_array;
+    parameters.s_array = s_array;
+    parameters.steps = steps;
+    parameters.h = (end-start)/(double)(steps-1);
+
+    //print_data2file(NULL, parameters.g_array, steps);
+    //print_data2file(NULL, parameters.s_array, steps);
 
     //solve differential equation for given boundary conditions
-    free_param = secant_numerov(-1.0, 1.0, paramters, bound_con, f_0, f_max, 12);
+    free_param = secant_numerov(-1.0, 1.5, parameters, bound_con, f_0, f_max, 15);
+    printf("Der freie Parameter lautet : %15.6e\n", free_param);
 
     //use free parameter to calculate final values of the function
-    numerov_func(paramters, set_param, free_param);
+    numerov_func(parameters, set_param, free_param);
+    //print_data2file(NULL, x_array, steps);
     data_table = create_2d_array(steps, 2);
     for(int i=0; i<steps; i++){
-        data_table[i][0] = x_array[0];
-        data_table[i][1] = f_array[0];
+        data_table[i][0] = x_array[i];
+        data_table[i][1] = f_array[i];
     }
 
 
@@ -241,6 +255,11 @@ double** numerov_complete(double start, double end , int steps, double (*g_func)
 }
 
 int main(int argc, char* argv[]){
+    double **array_test;
     printf("Hallo Welt. test\n");
+    int length = 100;
+    array_test = numerov_complete(0.0, 2*M_PI, length, &g_func, &s_func, 1.5, 1.5, 1);
+    print_table2file("test.txt", array_test, length, 2);
+    free2d(array_test);
     return 0;
 }

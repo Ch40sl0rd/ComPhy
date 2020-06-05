@@ -8,6 +8,8 @@
 #define M_PI 3.14159265358979323846
 #endif
 
+double lambda;
+
 typedef struct numerov_param{
     double *f_array;
     double *g_array;
@@ -21,7 +23,7 @@ double s_func(double x){
 }
 
 double g_func(double x){
-    return 1.0;
+    return M_PI/60;
 }
 
 /*******************************************************************************************************************************
@@ -132,6 +134,7 @@ void numerov_down(numerov_param parameters, double f_max, double f_maxm1){
  * *****************************************************************************************/
 double bound_con_up(double free_param, numerov_param parameters, double f_0, double f_max){
     numerov_up(parameters, f_0, free_param);
+    //printf("Die Differenz beträgt momentan %15.6e\n", parameters.f_array[parameters.steps-1] - f_max);
     return parameters.f_array[parameters.steps-1] - f_max;
 }
 
@@ -165,13 +168,19 @@ double bound_con_down(double free_param, numerov_param parameters, double f_0, d
  
  * *****************************************************************************************************************************************************************/
 double secant_numerov(double x0, double x1, numerov_param parameters, double(*func)(double, numerov_param , double, double), double f_0, double f_max, int steps){
-    const double acc = 1e-10;
+    const double acc = 1e-12;
     double x_n, x_np1, temp;
+    double f_xn, f_xnp1;
     int step = 0;
     x_n = x0;
     x_np1 = x1;
     do{
-        temp = x_np1 - (x_np1-x_n)/(func(x_np1, parameters, f_0, f_max) - func(x_n, parameters, f_0, f_max))*func(x_np1, parameters, f_0, f_max); 
+        //temp = x_np1 - (x_np1-x_n)/(func(x_np1, parameters, f_0, f_max) - func(x_n, parameters, f_0, f_max))*func(x_np1, parameters, f_0, f_max);
+        f_xn = func(x_n, parameters, f_0, f_max);
+        f_xnp1 = func(x_np1, parameters, f_0, f_max);
+        printf("Die Werte der Funktion betragen jeweils: %15.6e; %15.6e\n", f_xnp1, f_xn);
+        temp = x_np1 - f_xnp1*(x_np1 - x_n)/(f_xnp1 - f_xn);
+        //temp = x_np1-func(x_np1, parameters, f_0, f_max)*(x_np1-x_n)/(func(x_np1, parameters, f_0, f_max) - func(x_n, parameters, f_0, f_max));
         printf("Der neue Schätzwert lautet: %15.12e\n", temp);
         x_n = x_np1;
         x_np1 = temp;
@@ -237,7 +246,7 @@ double** numerov_complete(double start, double end , int steps, double (*g_func)
     //print_data2file(NULL, parameters.s_array, steps);
 
     //solve differential equation for given boundary conditions
-    free_param = secant_numerov(-1.0, 1.5, parameters, bound_con, f_0, f_max, 15);
+    free_param = secant_numerov(0.0, 0.00001, parameters, bound_con, f_0, f_max, 15);
     printf("Der freie Parameter lautet : %15.6e\n", free_param);
 
     //use free parameter to calculate final values of the function
@@ -256,9 +265,8 @@ double** numerov_complete(double start, double end , int steps, double (*g_func)
 
 int main(int argc, char* argv[]){
     double **array_test;
-    printf("Hallo Welt. test\n");
-    int length = 100;
-    array_test = numerov_complete(0.0, 2*M_PI, length, &g_func, &s_func, 1.5, 1.5, 1);
+    int length = 10000;
+    array_test = numerov_complete(0.0, 60, length, &g_func, &s_func, 1.0, 0.0, 1);
     print_table2file("test.txt", array_test, length, 2);
     free2d(array_test);
     return 0;

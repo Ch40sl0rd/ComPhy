@@ -25,7 +25,7 @@ double s_const_0(double x){
 }
 
 double eigenvalue_function(double x){
-    return lambda;
+    return -lambda;
 }
 
 double g_func(double x){
@@ -346,7 +346,7 @@ double* search_eigenvalues(double start, double end, double step_width,
 
 int main(int argc, char* argv[]){
     double *list_eigenvals_1;
-    list_eigenvals_1 = search_eigenvalues(0.0, 0.5, 0.00001, eigenvalue_function, s_const_0, 0.0, 60.0, 1000, 1.0, 0.0, 1, 10);
+    list_eigenvals_1 = search_eigenvalues(0.0, -0.5, -0.00001, eigenvalue_function, s_const_0, 0.0, 60.0, 1000, 1.0, 0.0, 1, 10);
     print_data2file("eigenvalues_1.txt", list_eigenvals_1, 10);
     free(list_eigenvals_1);
     return 0;

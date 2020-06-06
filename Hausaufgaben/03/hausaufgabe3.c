@@ -22,8 +22,12 @@ double s_func(double x){
     return 0.0;
 }
 
+double eigenvalue_function(double x){
+    return lambda;
+}
+
 double g_func(double x){
-    return M_PI/60;
+    return (3*M_PI/60)*(3*M_PI/60);
 }
 
 /*******************************************************************************************************************************
@@ -178,16 +182,16 @@ double secant_numerov(double x0, double x1, numerov_param parameters, double(*fu
         //temp = x_np1 - (x_np1-x_n)/(func(x_np1, parameters, f_0, f_max) - func(x_n, parameters, f_0, f_max))*func(x_np1, parameters, f_0, f_max);
         f_xn = func(x_n, parameters, f_0, f_max);
         f_xnp1 = func(x_np1, parameters, f_0, f_max);
-        printf("Die Werte der Funktion betragen jeweils: %15.6e; %15.6e\n", f_xnp1, f_xn);
+        //printf("Die Werte der Funktion betragen jeweils: %15.6e; %15.6e\n", f_xnp1, f_xn);
         temp = x_np1 - f_xnp1*(x_np1 - x_n)/(f_xnp1 - f_xn);
         //temp = x_np1-func(x_np1, parameters, f_0, f_max)*(x_np1-x_n)/(func(x_np1, parameters, f_0, f_max) - func(x_n, parameters, f_0, f_max));
-        printf("Der neue Schätzwert lautet: %15.12e\n", temp);
+        //printf("Der neue Schätzwert lautet: %15.12e\n", temp);
         x_n = x_np1;
         x_np1 = temp;
         step++;
     }
     while(fabs(x_np1 - x_n)>acc && step<steps);
-    printf("Konvergenz erreicht nach %d Schritten.\n", step);
+    //printf("Konvergenz erreicht nach %d Schritten.\n", step);
     return x_np1;
 }
 /*******************************************************************************************************
@@ -246,8 +250,8 @@ double** numerov_complete(double start, double end , int steps, double (*g_func)
     //print_data2file(NULL, parameters.s_array, steps);
 
     //solve differential equation for given boundary conditions
-    free_param = secant_numerov(0.0, 0.00001, parameters, bound_con, f_0, f_max, 15);
-    printf("Der freie Parameter lautet : %15.6e\n", free_param);
+    free_param = secant_numerov(-1.0, 1.5, parameters, bound_con, f_0, f_max, 20);
+    //printf("[numerov_complete] Der freie Parameter lautet : %15.6e\n", free_param);
 
     //use free parameter to calculate final values of the function
     numerov_func(parameters, set_param, free_param);
@@ -263,11 +267,64 @@ double** numerov_complete(double start, double end , int steps, double (*g_func)
     return data_table;
 }
 
+double* search_eigenvalues(double start, double end, double step_width, double start_f, double end_f, int f_steps,
+    double f_0, double f_end, int direction, int max_num_eigenvals){
+    double *list_eigenvals, max, **function_values;
+    int num_eigenval, i, num_steps;
+
+    //set and calucalte constants for methode:
+    double threshhold = 1e3;
+    num_steps = (int)((end-start)/step_width +1);
+    printf("die Anzahl der Schritte beträgt %d\n", num_steps);
+    num_eigenval = 0;
+
+    //allocate memory for list of eigenvalues
+    list_eigenvals = (double*)malloc(sizeof(double)*max_num_eigenvals);
+
+    for(i=0; i<num_steps; i++){
+        lambda = start + i*step_width;
+        //printf("Scan for lambda = %15.6e\n", lambda);
+        function_values = numerov_complete(start_f, end_f, f_steps, eigenvalue_function, s_func, f_0, f_end, 1);
+        //print_table2file("test.txt", function_values, f_steps, 2);
+        //find maxmimum amplitude of the function
+        max = 0.0;
+        for(int j=0; j<f_steps; j++){
+            if(max < fabs(function_values[j][1])){
+                max = fabs(function_values[j][1]);
+            }
+        }
+        //printf("Das Maximum beträgt %15.6e.\n", max);
+        if(max > threshhold){
+            //printf("[search_eigenvals] The maxmimum is %15.6e\n", max);
+            printf("[search_eigenvals] The %dth eigenvalue is %15.6e\n",num_eigenval, lambda);
+            list_eigenvals[num_eigenval]=lambda;
+            num_eigenval++;
+            i += 100;
+        }
+        free2d(function_values);
+        if(num_eigenval == max_num_eigenvals){
+            i=num_steps;        
+        }
+    }
+    printf("Insgesamt wurden %d Eigenwerte gefunden.\n", num_eigenval);
+    if(num_eigenval<max_num_eigenvals){
+        for(int j=num_eigenval; j<max_num_eigenvals; j++){
+            list_eigenvals[j] = 0.0;
+        }
+    }
+    return list_eigenvals;
+}
+
 int main(int argc, char* argv[]){
-    double **array_test;
-    int length = 10000;
-    array_test = numerov_complete(0.0, 60, length, &g_func, &s_func, 1.0, 0.0, 1);
-    print_table2file("test.txt", array_test, length, 2);
-    free2d(array_test);
+    double *list_eigenvals_1;
+    double **list_function;
+    lambda = 0;
+    list_function = numerov_complete(0.0, 60.0, 1000, eigenvalue_function, s_func, 1.0, 0.0, 1);
+    print_table2file("test.txt", list_function, 1000, 2);
+    printf("%15.6e\t%15.6e\n", list_function[1][0], list_function[0][1]);
+    list_eigenvals_1 = search_eigenvalues(0.0, 0.3, 0.000001, 0.0, 60.0, 1000, 1.0, 0.0, 1, 10);
+    print_data2file(NULL, list_eigenvals_1, 10);
+    free2d(list_function);
+    free(list_eigenvals_1);
     return 0;
 }

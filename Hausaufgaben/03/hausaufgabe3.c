@@ -10,6 +10,8 @@
 
 double lambda;
 
+//define struct for paramters for the numerov-methode to shorten
+//function calls
 typedef struct numerov_param{
     double *f_array;
     double *g_array;
@@ -267,15 +269,35 @@ double** numerov_complete(double start, double end , int steps, double (*g_func)
     return data_table;
 }
 
+/**********************************************************************************************************************************
+ *  This function searches for eigenvalues of the following differential equation:
+ *  f''(x) - lambdaf(x) = 0 with set boundary conditions.
+ *  it uses the numerov-methode in conjunktion with the secant-methode
+ *  to find the coreesponding values for the function x and evaluates the eigenvalues
+ *  from the basis of their maximum amplitude.
+ *  
+ *  \param start: starting point of the interval of eigenvalues
+ *  \param end: end point of interval fro eigenvalues
+ *  \param step_width: width between two possible eigenvalues
+ *  \param start_f: starting point for x
+ *  \param end_f: end point for x
+ *  \param f_steps: number of steps for x between start_f and end_f
+ *  \param f_0: value for f(start)
+ *  \param f_max: value for f(end)
+ *  \param direction: either 1 or -1 for direction of numerov methode
+ *  \param max_num_eigenvalues: number of eigenvalues to look for.
+ * 
+ *  \return list of all found eigenvalues.
+ ************************************************************************************************************************************/
 double* search_eigenvalues(double start, double end, double step_width, double start_f, double end_f, int f_steps,
     double f_0, double f_end, int direction, int max_num_eigenvals){
     double *list_eigenvals, max, **function_values;
     int num_eigenval, i, num_steps;
 
     //set and calucalte constants for methode:
-    double threshhold = 1e3;
+    double threshhold = 1e3;    //threshhold for maxmimum amplitude, al non-eigenvalues have around O(10) max amplitude
     num_steps = (int)((end-start)/step_width +1);
-    printf("die Anzahl der Schritte beträgt %d\n", num_steps);
+    //printf("die Anzahl der Schritte beträgt %d\n", num_steps);
     num_eigenval = 0;
 
     //allocate memory for list of eigenvalues
@@ -296,17 +318,19 @@ double* search_eigenvalues(double start, double end, double step_width, double s
         //printf("Das Maximum beträgt %15.6e.\n", max);
         if(max > threshhold){
             //printf("[search_eigenvals] The maxmimum is %15.6e\n", max);
-            printf("[search_eigenvals] The %dth eigenvalue is %15.6e\n",num_eigenval, lambda);
+            printf("[search_eigenvals] The %dth eigenvalue is %15.6e\n",num_eigenval+1, lambda);
             list_eigenvals[num_eigenval]=lambda;
             num_eigenval++;
+            //increase i by a significant ammount so that the next chechek value is not the same eigenvalue
             i += 100;
         }
         free2d(function_values);
+        //break the loop if the desired number of eigenvalues has been found.
         if(num_eigenval == max_num_eigenvals){
-            i=num_steps;        
+            i=num_steps;   
         }
     }
-    printf("Insgesamt wurden %d Eigenwerte gefunden.\n", num_eigenval);
+    printf("[search_eigenvals] A total of %d eigenvalues have been found.\n", num_eigenval);
     if(num_eigenval<max_num_eigenvals){
         for(int j=num_eigenval; j<max_num_eigenvals; j++){
             list_eigenvals[j] = 0.0;
@@ -317,14 +341,8 @@ double* search_eigenvalues(double start, double end, double step_width, double s
 
 int main(int argc, char* argv[]){
     double *list_eigenvals_1;
-    double **list_function;
-    lambda = 0;
-    list_function = numerov_complete(0.0, 60.0, 1000, eigenvalue_function, s_func, 1.0, 0.0, 1);
-    print_table2file("test.txt", list_function, 1000, 2);
-    printf("%15.6e\t%15.6e\n", list_function[1][0], list_function[0][1]);
     list_eigenvals_1 = search_eigenvalues(0.0, 0.3, 0.000001, 0.0, 60.0, 1000, 1.0, 0.0, 1, 10);
-    print_data2file(NULL, list_eigenvals_1, 10);
-    free2d(list_function);
+    print_data2file("eigenvalues_1.txt", list_eigenvals_1, 10);
     free(list_eigenvals_1);
     return 0;
 }

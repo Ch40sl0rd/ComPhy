@@ -300,8 +300,8 @@ double* search_eigenvalues(double start, double end, double step_width,
     int num_eigenval, i, num_steps;
 
     //set and calucalte constants for methode:
-    double threshhold = 1e3;    //threshhold for maxmimum amplitude, al non-eigenvalues have around O(10) max amplitude
-    num_steps = (int)((end-start)/step_width +1);
+    double threshhold = 0.7e3;    //threshhold for maxmimum amplitude, al non-eigenvalues have around O(10) max amplitude
+    num_steps = abs((int)((end-start)/step_width +1));
     //printf("die Anzahl der Schritte beträgt %d\n", num_steps);
     num_eigenval = 0;
 
@@ -327,7 +327,7 @@ double* search_eigenvalues(double start, double end, double step_width,
             list_eigenvals[num_eigenval]=lambda;
             num_eigenval++;
             //increase i by a significant ammount so that the next chechek value is not the same eigenvalue
-            i += 100;
+            i += 10;
         }
         free2d(function_values);
         //break the loop if the desired number of eigenvalues has been found.
@@ -346,7 +346,7 @@ double* search_eigenvalues(double start, double end, double step_width,
 
 int main(int argc, char* argv[]){
     double *list_eigenvals_1;
-    list_eigenvals_1 = search_eigenvalues(0.0, -0.5, -0.00001, eigenvalue_function, s_const_0, 0.0, 60.0, 1000, 1.0, 0.0, 1, 10);
+    list_eigenvals_1 = search_eigenvalues(0.0, -0.3, -0.00001, eigenvalue_function, s_const_0, 0.0, 60.0, 1000, 1.0, 0.0, 1, 10);
     print_data2file("eigenvalues_1.txt", list_eigenvals_1, 10);
     free(list_eigenvals_1);
     return 0;

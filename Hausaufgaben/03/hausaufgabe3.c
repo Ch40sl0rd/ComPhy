@@ -346,6 +346,7 @@ double* search_eigenvalues(double start, double end, double step_width,
 
 int main(int argc, char* argv[]){
     double *list_eigenvals_1;
+    printf("[main] Excersise 7.2 will be executed next, we search for the 10 lowest eigenvalues sorted by absolute value.\n");
     list_eigenvals_1 = search_eigenvalues(0.0, -0.3, -0.00001, eigenvalue_function, s_const_0, 0.0, 60.0, 1000, 1.0, 0.0, 1, 10);
     print_data2file("eigenvalues_1.txt", list_eigenvals_1, 10);
     free(list_eigenvals_1);

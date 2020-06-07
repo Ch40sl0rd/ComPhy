@@ -329,7 +329,7 @@ else if (ort == 3)
 
                 if (Band<2 && zwew != 0 && fabs(i - zwew))
                 {
-                    printf("Energieeigenwert %lf: %lf,\n", zwew, i, fabs(i - zwew));
+                    printf("Energieeigenwert %lf: %lf,\n", zwew, i);
 
                     Band++;
                 }

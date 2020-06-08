@@ -460,6 +460,7 @@ int main(int argc, char* argv[]){
         epsilon = i*eps_width;
         list_eigenvals_4 = search_eigenvals_pot(0.0, 60.0, 0.001, 8.0, &num_eigenvals);
         print_data2file(list_txt[i-1], list_eigenvals_4, num_eigenvals);
+        free(list_eigenvals_4);
     }
     return 0;
 }

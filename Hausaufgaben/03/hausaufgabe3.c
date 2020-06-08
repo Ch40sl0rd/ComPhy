@@ -8,7 +8,8 @@
 #define M_PI 3.14159265358979323846
 #endif
 
-double lambda;
+double lambda; //paramters for calculating eigenvalues
+double epsilon; //paramters for calculating electric potential
 
 //define struct for paramters for the numerov-methode to shorten
 //function calls
@@ -28,8 +29,8 @@ double eigenvalue_function(double x){
     return -lambda;
 }
 
-double g_func(double x){
-    return (3*M_PI/60)*(3*M_PI/60);
+double pot_period_electric(double x){
+    return -2.0*(60*pow(cos(M_PI*x), 16) - lambda + epsilon*x);
 }
 
 /*******************************************************************************************************************************
@@ -300,7 +301,7 @@ double* search_eigenvalues(double start, double end, double step_width,
     int num_eigenval, i, num_steps;
 
     //set and calucalte constants for methode:
-    double threshhold = 0.7e3;    //threshhold for maxmimum amplitude, al non-eigenvalues have around O(10) max amplitude
+    double threshhold = 0.5e3;    //threshhold for maxmimum amplitude, al non-eigenvalues have around O(10) max amplitude
     num_steps = abs((int)((end-start)/step_width +1));
     //printf("die Anzahl der Schritte beträgt %d\n", num_steps);
     num_eigenval = 0;
@@ -344,11 +345,121 @@ double* search_eigenvalues(double start, double end, double step_width,
     return list_eigenvals;
 }
 
+void plot_function_gap(double lambda_m, char* const filename){
+    double **function_values;
+    double sum;
+    double h = 60.0/(1000.0-1.0);
+    epsilon = 0.0;
+    lambda = lambda_m;
+    function_values = numerov_complete(0.0, 8.0, 1000, pot_period_electric, s_const_0, 0.0, 0.0, 1);
+    //calculate norm-factor
+    sum = 0.0;
+    for(int i=0; i<1000-1; i++){
+        sum += h/2*function_values[i][1]*function_values[i][1];
+    }
+    sum = sqrt(sum);
+    for(int i=0; i<1000; i++){
+        function_values[i][1] = function_values[i][1]/sum;
+    }
+    print_table2file(filename, function_values, 1000, 2);
+    free2d(function_values);
+}
+
+double* search_eigenvals_pot(double start, double end, double width, double L, int* num_eigenvals){
+    double* list_eigenvals;
+    int cur_eigenval, max_num_eigenvals;
+    int steps_eigenvals;
+    double *g_array, *s_array, *x_array, *f_array;
+    numerov_param parameters;
+    double end_j, end_jm1;
+
+    max_num_eigenvals = 300;
+    cur_eigenval = 0;
+    list_eigenvals = (double*)malloc(sizeof(double)*max_num_eigenvals);
+    steps_eigenvals = abs((int)((end-start)/width)) +1;
+    lambda = 0.0;
+
+    f_array = (double*)malloc(sizeof(double)*1000);
+    g_array = (double*)malloc(sizeof(double)*1000);
+    s_array = (double*)malloc(sizeof(double)*1000);
+
+    parameters.f_array = f_array;
+    parameters.s_array = s_array;
+    parameters.steps = 1000;
+    parameters.g_array = g_array;
+    parameters.h = fabs(L/(1000-1));
+    
+    end_j = 0;
+    end_jm1 = 0;
+    for(int i=0; i<steps_eigenvals; i++){
+        lambda = start +i*width;
+        x_array = numerov_init(0.0, L, 1000, g_array, pot_period_electric, s_array, s_const_0);
+        parameters.f_array = f_array;
+        parameters.s_array = s_array;
+        parameters.steps = 1000;
+        parameters.g_array = g_array;
+        parameters.h = fabs(L/(1000-1)); 
+        numerov_up(parameters, 0.0, 0.000001);
+
+        end_jm1 = end_j;
+        end_j = parameters.f_array[999];
+        if(end_j==0 || (end_j>0 && end_jm1<0) ||(end_j<0 && end_jm1>0) ){
+            list_eigenvals[cur_eigenval] = lambda;
+            cur_eigenval++;
+            if(cur_eigenval==max_num_eigenvals){
+                printf("Maximium number of eigenvalues have been reached.\n");
+            }
+        }
+    }
+    printf("[search_eigenvals_pot] A total of %d eigenvalues have been found.\n", cur_eigenval);
+    *num_eigenvals=cur_eigenval;
+    free(f_array); free(x_array); free(g_array); free(s_array);
+    return list_eigenvals;
+}
+
+
+
 int main(int argc, char* argv[]){
-    double *list_eigenvals_1;
+    double *list_eigenvals_1, *list_eigenvals_2, *list_eigenvals_3, *list_eigenvals_4;
+    int num_eigenvals;
     printf("[main] Excersise 7.2 will be executed next, we search for the 10 lowest eigenvalues sorted by absolute value.\n");
     list_eigenvals_1 = search_eigenvalues(0.0, -0.3, -0.00001, eigenvalue_function, s_const_0, 0.0, 60.0, 1000, 1.0, 0.0, 1, 10);
     print_data2file("eigenvalues_1.txt", list_eigenvals_1, 10);
     free(list_eigenvals_1);
+
+    //##########################        Aufgabe 8.2     #######################
+    epsilon=0.0;
+    printf("[main] Now calculating eigenvalues for periodic potential and L=8.\n");
+    list_eigenvals_2 = search_eigenvals_pot(0.0, 60.0, 0.001, 8.0, &num_eigenvals);
+    print_data2file("eigenvalues_l8.txt", list_eigenvals_2, num_eigenvals);
+    free(list_eigenvals_2);
+    plot_function_gap(5.960000e+00, "Gap1_lower.txt");
+    plot_function_gap(1.926700e+01, "Gap1_higher.txt");
+    plot_function_gap(2.339700e+01, "Gap2_lower.txt");
+    plot_function_gap(3.974000e+01, "Gap2_higher.txt");
+
+    //##########################        Aufgabe 8.3     #######################
+    printf("[main] Now calculating eigenvalues for periodic potential and L variable.\n");
+    list_eigenvals_3 = search_eigenvals_pot(0.0, 60.0, 0.001, 16.0, &num_eigenvals);
+    print_data2file("eigenvalues_l16.txt", list_eigenvals_3, num_eigenvals);
+    free(list_eigenvals_3);
+    list_eigenvals_3 = search_eigenvals_pot(0.0, 60.0, 0.001, 32.0, &num_eigenvals);
+    print_data2file("eigenvalues_l32.txt", list_eigenvals_3, num_eigenvals);
+    free(list_eigenvals_3);
+    list_eigenvals_3 = search_eigenvals_pot(0.0, 60.0, 0.001, 48.0, &num_eigenvals);
+    print_data2file("eigenvalues_l48.txt", list_eigenvals_3, num_eigenvals);
+    free(list_eigenvals_3);
+
+
+
+    //##########################        Aufgabe 8.3     #######################
+    printf("[main] Now calculating eigenvalues for electric potential\n");
+    double eps_width = 0.2;
+    char* list_txt[] = { "0_2.txt", "0_4.txt", "0_6.txt", "0_8.txt", "1_0.txt", "1_2.txt", "1_4.txt", "1_6.txt", "1_8.txt", "2_0.txt", };
+    for(int i=1; i<=10; i++){
+        epsilon = i*eps_width;
+        list_eigenvals_4 = search_eigenvals_pot(0.0, 60.0, 0.001, 8.0, &num_eigenvals);
+        print_data2file(list_txt[i-1], list_eigenvals_4, num_eigenvals);
+    }
     return 0;
 }

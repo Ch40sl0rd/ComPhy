@@ -1,7 +1,7 @@
 //Lars Döpper, Dirk Knott
 //make
 // ./hausaufgabe3 [custom step width]
-//Das Programm benötigt allerdings sehr viel Arbeitsspeicher
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>

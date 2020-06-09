@@ -1,6 +1,6 @@
-// make
-// ./hausaufgabe1
-// Lars Döpper
+//Lars Döpper, Dirk Knott
+//make
+// ./hausaufgabe3 [custom step width]
 #ifndef NUMERIK_OWN_H
 #define NUMERIK_OWN_H
 

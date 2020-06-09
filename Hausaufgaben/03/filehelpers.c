@@ -1,6 +1,6 @@
-// make
-// ./hausaufgabe1
-// Lars Döpper
+//Lars Döpper, Dirk Knott
+//make
+// ./hausaufgabe3 [custom step width]
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

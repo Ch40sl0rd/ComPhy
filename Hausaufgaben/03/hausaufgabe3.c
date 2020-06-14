@@ -450,6 +450,7 @@ int main(int argc, char* argv[]){
     list_eigenvals_2 = search_eigenvals_pot(0.0, 60.0, width, 8.0, &num_eigenvals);
     print_data2file("eigenvalues_l8.txt", list_eigenvals_2, num_eigenvals);
     free(list_eigenvals_2);
+    //plot functions for eigenvalues before and after a gap
     plot_function_gap(5.960000e+00, "Gap1_lower.txt");
     plot_function_gap(1.926700e+01, "Gap1_higher.txt");
     plot_function_gap(2.339700e+01, "Gap2_lower.txt");

@@ -1,0 +1,35 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{packets}
+\author{Lars Döpper}
+\date{\today}
+\title{441 Computerphysik - Hausaufgabe 3}
+\begin{document}
+	\maketitle
+\section*{H.9: Grundzustand für (m,n)-Potentiale}
+In dieser Hausaufgabe beschäftigen wir uns mit allgemeinen Potentialen der Form:
+\begin{equation}
+V_{m,n}(r) = V_0\left( \left(\frac{R}{r}\right)^{m} -\frac{m}{n}\left(\frac{R}{r}\right)^{n} \right)\frac{n}{m-n}
+\end{equation}
+Mit den Einschränkungen $V_0>0$ und $m>n$. Ziel dieser Hausaufgabe ist  die Bestimmung der Grundzustandsenergie des Lennard-Jones-Potentials mit $m=12 \; \&\; n=6$. Dazu gehen wir wieder von der zeitunabhängigen Schrödingergleichung aus:
+\begin{equation}\label{eq:schrödinger}
+	-\frac{\hbar^2}{2M}\Delta\phi(\vec{x}) + V(\vec{x})\phi(\vec{x}) = E\phi(\vec{x})
+\end{equation}
+Und setzen in diese dann das (m,n)-Potential ein und suchen nach dem ersten Eigenwert dieses Problems.
+Wir interessieren uns allerdings nur für die sog. s-Wellen, also für die Wellen mit Drehimpulsquantenzahl $l=0$. Somit ist das Potential nicht mehr Richtungsabhängig und wir können das Potential im  Impulsraum schreiben als:
+\begin{equation}
+	V^{l=0}(p, p')=\frac{(4\pi)^2}{(2\pi)^3}\int_{0}^{\infty}r^2drV(r)\frac{\sin(pr)}{pr}\frac{\sin(p'r)}{p'r}
+\end{equation}
+Für allgemeine (m,n)-Potentiale müssen wir dieses Integral zumeist numerisch lösen. In dieser hausaufgabe verwenden wir dafür die Integrationsmethode nach Gauß und Legendre.
+\subsection*{Das  (2,1)-Potential}
+Um unsere Methoden zu entwickeln und auf ihre Richtigkeit zu prüfen, untersuchen wir zunächst das  (2,1)-Potential.  Dieses lautet dann:
+\begin{equation}\label{eq:21pot}
+	V(r) = V_0\left(\left(\frac{R}{r}\right)^2 -2\left(\frac{R}{r}\right)\right)
+\end{equation}
+\end{document}

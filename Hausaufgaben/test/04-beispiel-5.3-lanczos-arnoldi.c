@@ -228,7 +228,7 @@ void prepmat()   /* Routine benoetigt hier keine Parameter, da diese durch globa
    for(i=0; i<np; i++)
     for(j=0; j<np; j++)
       {
-	Vmesh[i+j*np]=Vpot(pmesh[i],pmesh[j])*pmesh[j]*pmesh[j]*wmesh[j];
+	        Vmesh[i+j*np]=Vpot(pmesh[i],pmesh[j])*pmesh[j]*pmesh[j]*wmesh[j];
       }
 
  }  

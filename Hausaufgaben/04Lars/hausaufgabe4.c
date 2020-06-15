@@ -24,8 +24,19 @@ double *p_array;
 double *w_array;
 double *V_array;
 
-int dim; //dimension of the matrix
+int dim; //dimension of the matrix, nummer der stützstellen für p
 int maxiter=5; // maximum number of iteration steps
+
+int m;  //parameter for potential
+int n;  //parameter for potential
+
+double y_start; //start value for integration of potential
+double y_end;   //end value for integration of potential
+int y_steps;    //number of values for y for integration
+
+double p_start;
+double p_end;
+
 
 /* dgeev_ als externe Funktion deklarieren 
    Die hier gegebenen Parameter stimmen mit der Definition
@@ -76,7 +87,7 @@ double secant(double x1, double x2, double (*func)(double), int *schritt)
  * 
  * \return value of the (m,n) potential at r
  * **************************************/
-double pot_space_norm(double r, int m, int n){
+double pot_space_norm(double r){
     return V_0*(n/(m-n))*( pow(R/r, m) - m/n*pow(R/r, n) );
 }
 
@@ -91,7 +102,7 @@ double pot_space_norm(double r, int m, int n){
  * 
  * \return value of the (m,n) potential at r
  * **************************************/
-double pot_space_modified(double r, int m, int n){
+double pot_space_modified(double r){
     if(mu < 0){
         printf("[pot_space_mod] wrong parameter for mu. Mu has be be greater than 0. Make Mu smaller than 0.\n");
         mu = -mu;
@@ -133,8 +144,7 @@ double dot_prod(double *vin1, double *vin2){
  * 
  *  \return value of the potential at p, p'
  * *************************/
-double pot_impuls(double p, double p_s, int m, int n,
-    double y_start, double y_end, int y_steps){
+double pot_impuls(double p, double p_s){
     
     if(p==0.0 || p_s==0.0){
         return 1e-5;
@@ -163,7 +173,7 @@ double pot_impuls(double p, double p_s, int m, int n,
     for(i=0; i<y_steps;i++){
         y = y_vals[i];
         w = w_vals[i];
-        pot_space = pot_space_modified(y, m, n);
+        pot_space = pot_space_modified(y);
         printf("y: %15.6e\t w:%15.6e\t pot: %15.6e\n", y, w, pot_space);
         pot += y*y*pot_space*sin(p*y)*sin(p_s*y)/(p*p_s*y*y);        
     }
@@ -186,6 +196,33 @@ double pot_impuls_analytical(double p, double p_s){
     return 0;
 }
 
+void prep_trapez(double *p, double *w){
+    double h = (p_end-p_start)/(dim-1);
+    for(int i=0; i<dim; i++){
+        p[i] = p_start +i*h;
+        w[i] = h;
+    }
+    w[0] = h/2.0;
+    w[dim-1] = h/2.0;
+}
+
+void prep_mat(){
+    //allokiere speicher für die stützstellen von p, w und V
+    p_array = (double*)malloc(sizeof(double)*dim); //array für impulspunkte
+    w_array = (double*)malloc(sizeof(double)*dim); //array für gewichte der trapez-integration
+    V_array = (double*)malloc(sizeof(double)*dim*dim);  // matrix für werte des Potentials
+
+    prep_trapez(p_array, w_array);
+
+    for(int i=0; i<dim; i++){
+        for(int j=0; j<dim; j++){
+            V_array[i + j*dim] = pot_impuls(p_array[i], p_array[j])*p_array[j]*p_array[j]*w_array[j];
+        }
+    }
+
+
+}
+
 double eigenval(double E){
     double maxlambda;
     double  *a_mat; //Matrix A
@@ -197,7 +234,7 @@ double eigenval(double E){
     double *c;  //Feld für die Eigenvektoren
     double *WR, *WI;    //Feld für Real- und Imanginärteil der Eigenwerte
     double *work;   //Hilsfeld  für  lapack-bib
-    double norm, dot_prod;  //Hilfswerte für Norm und Skalarprodukt
+    double norm, dot_prod_val;  //Hilfswerte für Norm und Skalarprodukt
 
     //Hilfsvariablen  für die Verwendung von Lapack mit Fortran
     FINT info;
@@ -218,6 +255,24 @@ double eigenval(double E){
     VR = (double*)malloc(sizeof(double)*dim_red*dim_red);
     VL = (double*)malloc(sizeof(double)*dim_red*dim_red);
 
+    //initianlisiere matrix a_mat als 0
+    for(int i=0; i<dim_red*dim_red; i++){
+        a_mat[i] = 0.0;
+    }
+
+    //setze den startvektor als konstant 1 fest.
+    for(int i=0; i<dim; i++){
+        v_vecs[i + 0*dim_red] = 1.0;
+    }
+    maxlambda = 0.0;
+    norm = sqrt(dot_prod(&v_vecs[0*dim], &v_vecs[0*dim]));
+    //normalisiere den neuen startvektor
+    multiply_vec(1/norm, &v_vecs[0*dim], &v_vecs[0*dim]);
+
+
+    free(a_mat); free(v_vecs); free(w_vec); free(w_tilde_vec); free(v_help); free(VL); free(VR);
+    free(c); free(WR); free(WI); free(work);
+    return maxlambda;
 }
 
 double function_search(double E){
@@ -225,8 +280,6 @@ double function_search(double E){
 }
 
 int main(int argc, char* argv[]){
-    v_0 = 400.0;
-    mu = 1;
-    printf("Impuls bei p, p_s : %15.6e.\n", pot_impuls(10.0, 20.0, 2, 1, 0.0, 10.0, 100));
+    
     return 0;
 }

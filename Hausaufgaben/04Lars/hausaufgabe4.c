@@ -191,6 +191,7 @@ double pot_impuls(double p, double p_s){
 void pot_impuls_list(double p_s){
     double pot; //value of the potential;
     double p;
+    if(p_s==0.0) p_s=1e-5;
     gsl_integration_glfixed_table *yw_table;
     size_t i;
     double *y_vals, *w_vals;
@@ -213,6 +214,7 @@ void pot_impuls_list(double p_s){
     for(int j=0; j<dim; j++){
         pot = 0.0;
         p = p_array[j];
+        if(p==0.0) p=1e-5; //check for divide by zero
         for(i=0; i<y_steps;i++){
             y = y_vals[i];
             w = w_vals[i];
@@ -426,6 +428,7 @@ double function_search(double E){
 
 int main(int argc, char* argv[]){
     //###################### Aufgabe 9.3 ######################################
+    printf("[main] Wir berechnen jetzt numerisch das (2,1) Potential im Impulsraum\nund vergleichen dieses mit der analytischen Lösung.\n");
     double *V_error, *V_analyt, *V_error_max, *n_y_array;
     p_start = 0.0; p_end = 200.0;
     dim = 400;
@@ -455,12 +458,12 @@ int main(int argc, char* argv[]){
         printf("Maximaler Fehler für ny=%d ist %15.6e\n", y_steps, max_error);
         V_error_max[i-2] = max_error;
     }
-    print_data_table_double(NULL, n_y_array, V_error_max, 4);
+    print_data_table_double("9_3_variation_stützstellen.txt", n_y_array, V_error_max, 4);
     free(p_array); free(V_array); free(V_analyt); free(V_error); free(n_y_array); free(V_error_max);
 
     //###################### Aufgabe 9.6 ########################################
     //Wir ändern ein paar parameter für das Lennard-Jones Potential.
-    m = 12; n=6;
+    m = 12; n=6; mu=0.0;
     p_end = 400.0; dim = 2000;
     y_start = 0.4; y_end=10.0; y_steps = 20000;
     p_array = create_array_double(0.0, p_end, dim);

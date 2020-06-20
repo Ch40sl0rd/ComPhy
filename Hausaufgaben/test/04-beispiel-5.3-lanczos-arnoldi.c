@@ -382,19 +382,18 @@ double lambda(double E)
 	multvec(1.0,wvec,wtildevec);            /* wtilde=wvec */
 
 
-        for(j=0; j<=k; j++)
-	  {
-	    prod=skalp(&v[np*j],wvec);          /* prod = (v[j],w) */
+        for(j=0; j<=k; j++){
+	        prod=skalp(&v[np*j],wvec);          /* prod = (v[j],w) */
 
-	    amat[j+dim*k]=prod;                  /* Zwischenergebnis: A[j,k] = <v[j] | A | v[k] > */
-	    multvec(-prod,&v[np*j],vhilf);      /* wtilde=wtilde-v[j]*(v[j],w) */
-	    addvec(wtildevec,vhilf,wtildevec);
-	  }
+	        amat[j+dim*k]=prod;                  /* Zwischenergebnis: A[j,k] = <v[j] | A | v[k] > */
+	        multvec(-prod,&v[np*j],vhilf);      /* wtilde=wtilde-v[j]*(v[j],w) */
+	        addvec(wtildevec,vhilf,wtildevec);
+	      }
 
-	amat[k+1+dim*k]=sqrt(skalp(wtildevec,wtildevec)); /* wegen skalierung die folgt, A[k+1,k]= sqrt(<wtilde,wtilde>) */
+	      amat[k+1+dim*k]=sqrt(skalp(wtildevec,wtildevec)); /* wegen skalierung die folgt, A[k+1,k]= sqrt(<wtilde,wtilde>) */
         norm=1.0/amat[k+1+dim*k];                     /* Bestimme Norm^-1 */ 
         multvec(norm,wtildevec,&v[(k+1)*np]);            /* v[k+1] = wtilde / |wtilde| */		
-      }
+    }
 
     /* hier ist Matrix A bestimmt */
     /* Eigenwerte koenne beispielsweise mit DGEEV bestimmt werden */

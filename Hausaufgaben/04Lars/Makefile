@@ -6,7 +6,7 @@ CC := gcc -g -ggdb -Wall -Wpedantic -std=c99
 #Linker für fertige Programme
 LD := gcc
 #benötigte Bibliotheken
-BIBS := -lm -lgsl -lblas
+BIBS := -lm -lgsl -lblas -llapack -lgfortran
 
 # alle Programmnamen, hier per Hand aufgelistet, muss manuell genändert werden
 PROGRAMS := hausaufgabe4

@@ -1,6 +1,6 @@
-//Lars Döpper, Dirk Knott
+//Lars Döpper
 //make
-// ./hausaufgabe3 [custom step width]
+// ./hausaufgabe4
 #ifndef FILEHELPERS_h
 #define FILEHELPERS_H
 

@@ -263,6 +263,11 @@ void prep_trapez(double *p, double *w){
     w[dim-1] = h/2.0;
 }
 
+/**
+ *  Diese Methode bereitet die Matrix V mit den analytischen Werten
+ *  des Potentials vor. Der Speicher für p, w und V wird dabei neu allokiert.
+ * 
+ * */
 void prep_mat_anal(){
     double pi, pj;
     //allokiere speicher für die stützstellen von p, w und V
@@ -286,7 +291,8 @@ void prep_mat_anal(){
 /**
  *  Diese Methode bereit die Potentialmatrix für ein m,n Potential vor
  *  Dabei wird der speicher für die listen p, w und V neu allokiert.
- * 
+ *  Die Methode nutzt auch die Symmetrie der Matrix aus und ist so um einen
+ *  Faktor 2 schneller
  */
 void prep_mat_neu(){
     double pi, pj;
@@ -323,7 +329,7 @@ void prep_mat_neu(){
     
     //iteriere über alle Matrix elemente:
     for(int i=0; i<dim; i++){
-        for(int j=0; j<dim; j++){
+        for(int j=i; j<dim; j++){
             pot = 0.0;
             pi = p_array[i];
             pj = p_array[j];
@@ -338,6 +344,7 @@ void prep_mat_neu(){
             }
             pot *= 2/M_PI; //fertiges potential im Impulsraum für pi, pj
             V_array[i +j*dim] = pot*pj*pj*w_array[j]; //wert des Potentials mit Vorfaktoren für Arnoldi-Verfahren.
+            V_array[j+i*dim] = pot*pi*pi*w_array[i]; //Symmetrie der Matrix ausnutzen
         }
     }
     free(y_vals); free(w_vals);gsl_integration_glfixed_table_free(yw_table);
@@ -357,6 +364,14 @@ void apply_mat(double *vec_in, double *vec_out, double E){
     }
 }
 
+/**
+ *  Diese Methode berechnet den maximalen Eigenwert für
+ *  eine gegebene Energie E
+ * 
+ *  \param E: Energie deren maximaler Eigenwert gefunden werden soll.
+ * 
+ *  \return: Maximaler Eigenwert der Energie
+ */
 double eigenval(double E){
     double maxlambda; //Variablen für die letzen beiden Eigenwerte
     //wird als Konvergenzkriterium verwendet
@@ -482,7 +497,7 @@ int main(int argc, char* argv[]){
     n_y_array = (double*)malloc(sizeof(double)*4);
     V_error_max = (double*)malloc(sizeof(double)*4);
 
-    for(int i=2; i<5; i++){ //hier noch wieder 6 als Obergrenze einfügen.
+    for(int i=2; i<6; i++){ //hier noch wieder 6 als Obergrenze einfügen.
         y_steps = pow(10.0, i);
         n_y_array[i-2] = y_steps;
         pot_impuls_list(p_tilde);
@@ -696,7 +711,5 @@ int main(int argc, char* argv[]){
 
     printf("[main] Das Programm hat %14.6le Sekunden benötigt.\n", timeused);
 
-
-    
     return 0;
 }

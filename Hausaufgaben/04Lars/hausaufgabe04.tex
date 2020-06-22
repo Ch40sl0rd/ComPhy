@@ -10,10 +10,10 @@
 \usepackage[left=2.5cm, right=2cm, top=2cm]{geometry}
 \author{Lars Döpper}
 \date{\today}
-\title{441 Computerphysik - Hausaufgabe 3}
+\title{441 Computerphysik - Hausaufgabe 4}
 \begin{document}
+\maketitle
 
-	\maketitle
 \section*{H.9: Grundzustand für (m,n)-Potentiale}
 In dieser Hausaufgabe beschäftigen wir uns mit allgemeinen Potentialen der Form:
 \begin{equation}
@@ -62,14 +62,20 @@ Wobei gilt:
 	\epsilon &= \frac{E MR^2}{\hbar^2}
 \end{align*}
 Die Energie wird also in Einheiten von $\frac{\hbar^2}{MR^2}$ angegeben.
+\subsubsection*{Schrödingergleichung im Impulsraum}
+Wir können die Schrödingergleichung auch in den Impulsraum transformieren. Dann lautet die Schrödingergleichung:
+\begin{equation}
+	\epsilon\tilde{\Psi}(p) = \frac{1}{2}p^2\tilde{\Psi}(p) +\int_{0}^{\infty}dp'p'^2v^{l=0}(p,p')\tilde{\Psi}(p')
+\end{equation}
+Mit dem Potential in Gleichung \ref{eq:pot_impuls}. Diese Differentialgleichung lösen wir im Verlaufe der Hausaufgabe mit dem Arnoldi-Verfahren.
 \subsubsection*{Potential im Impulsraum}
 Wir modifizieren dieses Potential allerdings etwas, um eine Konvergenz des Integrals für beliebige p und p' sicherzustellen. Das modifizierte Potential lautet dann:
 \begin{equation}
-	v_{\mu}^{l=0}(y) = v_o\left[\left(\frac{1}{y}\right)^2 -\frac{2}{y}\right]e^{-\mu y}
+	v_{\mu}(y) = v_o\left[\left(\frac{1}{y}\right)^2 -\frac{2}{y}\right]e^{-\mu y}
 \end{equation}
 Das Potential im Impulsraum lautet dann:
-\begin{equation}
-	v^{l=0}(p,p') = \frac{2}{\pi}\int_{0}^{\infty}y^2dy\; v_{\mu}(y)\frac{\sin(py)\sin(p'y)}{pypy'}
+\begin{equation}\label{eq:pot_impuls}
+	v^{l=0}(p,p') = \frac{2}{\pi}\int_{0}^{\infty}y^2dy\; v_{\mu}(y)\frac{\sin(py)\sin(p'y)}{pyp'y}
 \end{equation}
 Dieses Integral lösen wir nun einmal numerisch und einmal analytisch und vergleichen dann die Ergebnisse. Für die numerische Integration verwenden wir die Gauß-Legendere-Methode. Für das analytische integrieren setzen wir zunächst das modifizierte Potential ein und teilen dann das Integral in zwei Unterintegrale auf. Es gibt dann nach einsetzen:
 \begin{equation}
@@ -134,9 +140,106 @@ Wir sehen also, dass diese Werte sehr nahe beieinander sind. Jetzt variieren wir
 \end{figure}
 Man kann aus den Graphen erkennen, dass die relativen Fehler für die Anzahl der Stützstellen $n_y$ sehr schnell klein werden und sich dann nicht mehr stark unterscheiden. Für die Anzahl der Impulsstellen $n_p$ fällt der relative Fehler exponentiell ab. Zuletzt lässt sich für $p_{max}$ kein klares Muster erkenne, allerdings sinkt der relative Fehler ab $p_{max} = 270$ stark und bleibt danach auch sehr klein.
 
-Hier noch Tabellen einfügen für Fehler.
+\begin{table}[htbp]
+	\begin{center}
+	\begin{tabular}{c|c}
+		$n_p$ & maximaler relativer Fehler $10^{-6}$\\ \hline
+		400 & 4,2769 \\
+		420 & 2,1720 \\
+		440 & 1,1056 \\
+		460 & 0,5639 \\
+		480 & 0,2882 \\
+		500 & 0,1476 \\
+		520 & 0,0757 \\
+		540 & 0,0389 \\
+		560 & 0,0200 \\
+		580 & 0,0103
+	\end{tabular}
+	\end{center}
+	
+	\label{tab:variation_np}\caption{Variation der Stützstellen $n_p$}
+\end{table}
+\begin{table}[htbp]
+	\begin{center}
+	\begin{tabular}{c|c}
+		$n_y$ & maximaler relativer Fehler $10^{-6}$ \\ \hline
+		200 & 32890,35 \\
+		400 & 4,2769 \\
+		800 & 4,2769 \\
+		1600 & 4,2769 \\
+		3200 & 4,2769 \\
+		6400 & 4,2769 \\
+		12800 & 4,2769
+	\end{tabular}
+\end{center}
+\label{tab:variation_ny}\caption{Variation der Stützstellen $n_y$}
+\end{table}
+\begin{table}[btbp]
+	\begin{center}
+	\begin{tabular}{c|c}
+		$p_{max} $ & maximaler relativer Fehler $10^{-6}$ \\ \hline
+		200 & 4,2769 \\
+		220 & 14,7135 \\
+		240 & 5,7478 \\
+		260 & 13,7732 \\
+		280 & 1,0584 \\
+		300 & 0,04905 \\
+		320 & 0,1487 \\
+		340 & 0,3972 \\
+		360 & 0,9542 \\
+		380 & 2,0958
+	\end{tabular}
+\end{center}
+\label{tab_variation_pmax}\caption{Variation des maximalen Impulses $p_{max}$}
+\end{table}
 \subsubsection*{Harmonische Näherung}
 Wir entwickeln nun das Potential im Ortsraum in einer Taylorreihe und bestimmen aus der Näherung bis zur Ordnung $y^2$ die Grundzustandsenergie verglichen mit dem harmonischen Oszillator.
+Dafür suchen wir zunächst den Tiefpunkt des Potentials. Es gilt:
+\begin{equation*}
+	\frac{\partial v}{\partial y}(y) = v_0e^{-\mu y}\left[-\mu\left(\frac{1}{y^2}-\frac{2}{y}\right)-\frac{2}{y^3}+\frac{2}{y^2}\right]
+\end{equation*}
+Damit ergibt sich für eine Extremstelle mit der Einschränkung $\mu = 1$:
+\begin{align*}
+	\frac{\partial v}{\partial y}(y) &= 0 \\
+	\Leftrightarrow
+	v_0e^{-\mu y}\left(\frac{2}{y}+\frac{1}{y^2}-\frac{2}{y^3}\right) &= 0 \\
+	\Leftrightarrow
+	\frac{2}{y}+\frac{1}{y^2}-\frac{2}{y^3} &= 0\\
+	\Leftrightarrow
+	2y^2 + y -2 &= 0 \\
+	\Leftrightarrow
+	y_{1,2} &= \pm\frac{\sqrt{17}}{4}-\frac{1}{4}
+\end{align*}
+Wir betrachten allerdings das Potential nur für $y>0$ und nach dem Vorzeichenkriterium ist $y_0 = \frac{\sqrt{17}-1}{4}$ auch ein Tiefpunkt. Für die Taylorentwicklung bis zur quadratischen Ordnung unter Einbeziehung, dass wir um einen Tiefpunkt entwickeln, gilt dann:
+\begin{equation}
+	v(y) \approx v(y_0) + \frac{1}{2}\frac{\partial^2 v}{\partial y^2}(y_0)(y-y_0)^2
+\end{equation}
+Und unter Berechnung der zweiten Ableitung, Einsetzen der Zahlenwerte ergibt sich damit:
+\begin{equation*}
+	v(y) \approx -168,78 + 1587,15(y-y_0)^2
+\end{equation*}
+Das vergleichen wir nun mit dem Potential des harmonischen Oszillators, für welches gilt:
+\begin{equation}\label{eq:harm_pot}
+	V(y) = \frac{1}{2}M\omega^2y^2
+\end{equation}
+Und für dessen Energie gilt:
+\begin{equation}\label{eq:harm_energy}
+	E_n = \hbar\omega\left(n+\frac{1}{2}\right)
+\end{equation}
+Unter Einbeziehung der richtigen Dimensionalität des Problems ergibt sich somit:
+\begin{equation}
+	1587,15(y-y_0)^2\frac{\hbar^2}{MR^4} = \frac{1}{2}M\omega^2y^2
+\end{equation}
+Wir erhalten damit für die Frequenz und Grundzustandsenergie die Relation:
+\begin{align*}
+	\omega &= \sqrt{2*1587,15}\frac{\hbar}{MR^2} \\
+	E_0 \approx 28,17 \frac{\hbar^2}{MR^2}
+\end{align*}
+Wir haben hier allerdings noch nicht die Verschiebung unseres Potentials entlang der y-Achse berücksichtigt. Wenn wir dies Berücksichtigen, ergibt sich für die Energie:
+\begin{equation}
+	E_{n,korr} = E_0 + V(y_0) = -140,61\frac{\hbar^2}{MR^2},0
+\end{equation}
+Dies bedeutet eine ungefähr $6\%$ Abweichung vom numerisch und analytisch errechneten Wert und liegt somit nahe am berechneten Wert. Allerdings zeigt das auch, dass die harmonische Näherung nicht ganz präzise zu diesem Potential passt.
 \subsection*{9.2: Das Lennard-Jones-Potential}
 In diesem Aufgabenteil wenden wir unsere Erkenntnisse aus dem (2,1)-Potential auf das Lennard-Jones-Potential mit (12,6) an.
 \subsubsection*{Das numerische Potential}
@@ -146,9 +249,43 @@ In diesem Aufgabenteil wenden wir unsere Erkenntnisse aus dem (2,1)-Potential au
 	\caption{Verlauf des Lennard-Jones-Potentials im Impulsraum}
 \end{figure}
 \subsubsection*{Die Grundzustandsenergie}
-Wir verwenden wieder das Arnoldi-Verfahren, um die Grundzustandsenergie zu finden.
+
+Wir verwenden wieder das Arnoldi-Verfahren, um die Grundzustandsenergie zu finden. 
+Zunächst führen wir diese Berechnung einmal für die vorgegebenen Parameter durch. Diese lauten $n_y = 20000$, $n_p=2000$, $0,4\leq y \leq 10$ und $p_{max} = 400$. Mit diesen Parametern erhalten wir eine Grundzustandsenergie von:
+\begin{equation}
+	\epsilon_0 = -320,33
+\end{equation}
+
+In der momentanen Version des Programm haben wir allerdings die Parameter etwas anders gewählt, um die Kalkulation zu beschleunigen. Im Programm gilt $n_p=500$ und $n_y = 5000$. Diese Werte haben wir gewählt, da die Variation dieser Werte keinen großen Einfluss auf den Energieeigenwert hat. Mit diesen Werten ergibt sich ein Energieeigenwert von:
+\begin{equation*}
+	\epsilon_0 = -320,34
+\end{equation*}
+
+Als nächstes variieren wir die verschiedenen Parameter für die Integration nach Gauß und Legendre und das Arnodli-Verfahren. Den Verlauf der Energieeigenwerte sieht man in Abbildung \ref{fig:lennard_jones_eigenvals}.
+\begin{figure}
+	\includegraphics[width=0.9\textwidth]{lj_variation_params}\label{fig:lennard_jones_eigenvals}
+	\caption{Verlauf der Eigenwerte bei Variation der Parameter}
+\end{figure}
+Man erkennt aus den Graphen, dass der Energieeigenwert nicht stark von der Anzahl der Stützstellen $n_y$ und nicht vom Startwert $y_{min}$ abhängen, da sich dort der Eigenwert nicht ändert.
+Bei den Parametern $n_p$ und $p_{max}$ verändert sich allerdings der Eigenwert und schwankt zwischen -320 und -330. Damit können wir mit sehr hoher Genauigkeit sagen, dass der Energieeigenwert zwischen -320 und -330 liegt, wobei er wahrscheinlich näher an -320 liegt. Da der Energieeigenwert aber für große $n_p$ stabil ist, müssen wir die Kalkulation nicht immer für $n_p=2000$ durchführen. Deswegen haben wir dies auch in unserem Programm geändert.
 \subsubsection*{Harmonische Näherung}
 Wir entwickeln das Lennard-Jones-Potential in einer Taylorreihe bis zur Ordnung $y^2$ und vergleichen dieses mit dem Potential des harmonischen Oszillator.
+Dafür entwickeln wir zunächst das Potential in eine Taylorreihe um $y_0 = 1$, da dies offensichtlich der Tiefpunkt des Potentials ist. Für das Potential gilt dann:
+\begin{align*}
+	v(y) &\approx v(1) + \frac{1}{2}\frac{\partial^2 v}{\partial y^2}(1)(y-1)^2 \\
+	&= -v_0 + 36v_0(y-1)^2 \\
+	&= v_0\left(36(y-1)^2 -1\right)
+\end{align*}
+Unter Verwedung von Gleichungen \ref{eq:harm_pot} und \ref{eq:harm_energy} können wir so wieder die Grundzustandsenergie berechnen. Für diese gilt dann:
+\begin{equation*}
+	E_0 = \frac{\sqrt{72v_0}}{2}\frac{\hbar^2}{MR^2} \approx 84,86 \frac{\hbar^2}{MR^2}
+\end{equation*}
+Diese Energie müssen wir jetzt wieder aufgrund der Koordinatenverschiebung korrigieren und erhalten so schließlich:
+\begin{equation}
+	E_{0,korr} = E_0 + v(y_0) = -315,15 \frac{\hbar^2}{MR^2}
+\end{equation}
+Dies entspricht einer Abweichung von ungefähr 2\% und ist somit eine bessere Näherung als beim (2,1)-Potential. Dies liegt wahrscheinlich daran, dass das Potential einen tieferen Potentialtopf aufweist, sodass der harm. Oszillator eine bessere Näherung darstellt.
 \newpage
 \listoffigures
+\listoftables
 \end{document}

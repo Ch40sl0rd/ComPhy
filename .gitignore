@@ -5,6 +5,11 @@
 #Latex code
 *.aux
 *.out
+*.bcf
+*.lof
+*.lot
+*.run.xml
+*.toc
 
 #Packages
 *.zip
@@ -17,6 +22,5 @@
 
 #data files
 *.mp4
-*.pdf
 
 

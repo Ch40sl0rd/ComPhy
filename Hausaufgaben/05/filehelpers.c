@@ -151,3 +151,28 @@ double* read_data_file(char* const filename, int *length, int binary){
     fclose(file);
     return data;
 }
+
+void print_table_1dim(char* const filename, double* data, int cols, int rows){
+    FILE *file_out;
+    if(filename==NULL){
+        file_out = stdout;
+    }
+    else{
+        file_out = fopen(filename, "w");
+    }
+    if(data==NULL){
+        printf("[print_data] empty data table. Abort print.\n");
+        return;
+    }
+    if(!file_out){
+        printf("[print_data] could not create file.\n");
+        return;
+    }
+    for(int i=0; i<rows; i++){
+        for(int j=0; j<cols-1; j++){
+            fprintf(file_out, "%15.2e\t", data[i*cols+j]);
+        }
+        fprintf(file_out, "%15.2e\n", data[(i+1)*cols -1]);
+    }
+
+}

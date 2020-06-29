@@ -9,7 +9,7 @@ LD := gcc
 BIBS := -lm -lgsl -lblas
 
 # alle Programmnamen, hier per Hand aufgelistet, muss manuell genändert werden
-PROGRAMS := hausaufgabe1
+PROGRAMS := hausaufgabe5
 
 # alle Quelldateien im momentanen Verzeichnis werden aufgelistest per "wildcard"
 SOURCES := $(wildcard *.c)
@@ -58,5 +58,5 @@ $(addsuffix .o, $(PROGRAMS)): % : $$(addsuffix .c,$$(basename $$(@))) $$(HEADERS
 
 .PHONY: clean all list-variables
 clean:
-	rm $(OBJECTS) $(PROGRAMS)
+	rm $(OBJECTS) 
 

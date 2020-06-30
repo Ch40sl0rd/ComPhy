@@ -22,14 +22,15 @@ int idx(int n, int j){
     return nd*n + j;
 }
 
-void solve_kdv(double t_start, double t_end, double x_start, double x_end, double N, char* const filename1, char* const filename2, char*const filename3){
+void solve_kdv(double t_start, double t_end, double x_start, double x_end, double N, char* const filename){
     //Variablen deklarieren
     double d;   //Schrittweite in Zeit-Richtung
     double h;   //Schrittweite in Orts-Richtung
     double *u;  //Feld für die Werte der Funktion, ein 2d-array
     double *x;  //Feld für die x-Koordinaten
     double *t;  //Feld für die Zeit-Koordinaten
-    double fak1, fak2, fak3, fak4;
+    double fak1, fak2;
+    double *func_end;
 
     //Schrittweiten berechnen
     h = fabs((x_end-x_start)/(double)(nd-1));   
@@ -42,6 +43,7 @@ void solve_kdv(double t_start, double t_end, double x_start, double x_end, doubl
     u = (double*)malloc(sizeof(double)*nt*nd);
     x = (double*)malloc(sizeof(double)*nd);
     t = (double*)malloc(sizeof(double)*nt);
+    func_end = (double*)malloc(sizeof(double)*nd);
 
     //Startwerte initialisieren:
     x[0] = x_start;
@@ -62,30 +64,48 @@ void solve_kdv(double t_start, double t_end, double x_start, double x_end, doubl
         fak2 = -(u[idx(0,j+2)] - 2.0*u[idx(0,j+2)] + 2.0*u[idx(0,j-1)] - u[idx(0,j-2)])/(2.0*h*h*h);
         u[idx(1,j)] = d*(fak1+fak2) + u[idx(0,j)];
     }
-    print_data_table_double(filename1, x, &u[idx(0,0)], nd);
+    
 
-    for(int n=2; n<nt; n++){
+    for(int n=1; n<nt-1; n++){
         t[n] = t_start + n*d;
         for(int j=0; j<nd; j++){
             //Brechnung der neuen Punktes u_n^j
-            u[idx(n,j)] = 0.0;
+            //Setze den Rand immer auf 0
+            if(j==0 || j==nd-1){
+                u[idx(n+1,j)] = 0.0;
+            }
+            else{
+                fak1 = ((u[idx(n,j+1)] + u[idx(n,j)] + u[idx(n,j-1)])/3.0) * ((u[idx(n, j+1)] - u[idx(n,j-1)])/(2.0*h));
+                fak2 = (u[idx(n,j+2)] - 2.0*u[idx(n,j+1)] + 2.0*u[idx(n,j-1)] - u[idx(n,j-2)])/(2.0*h*h*h);
+                u[idx(n+1, j)] = 2.0*d*(6.0*fak1 - fak2) + u[idx(n-1,j)];
+                
+            }
         }
     }
 
-    print_table_1dim(filename1, u, nd, nt);
-    //print_table2file(filename1, &u, nd, nt);
-    print_data2file(filename2, x, nd);
-    print_data2file(filename3, t, nt);
-    free(u); free(x); free(t);
+    for(int i=0; i<nd; i++){
+        func_end[i] = u[idx(nt-1, i)];
+    }
+
+    print_data_table_double(filename, x, func_end, nd);
+    //print_data2file(filename2, x, nd);
+    //print_data2file(filename3, t, nt);
+    free(u); free(x); free(t);free(func_end);
 }
 
 int main(){
     double x_start, x_end, t_start, t_end;
-    nt = 10000;
-    nd = 500;
+    nt = 25000;
+    nd = 1201;
     x_start = -30.0;
     x_end = 30.0;
     t_start = 0.0; 
     t_end = 1.0;
-    solve_kdv(t_start, t_end, x_start, x_end, 2, "test.txt", "ort.txt", "zeit.txt");
+    solve_kdv(t_start, t_end, x_start, x_end, 2, "funktion2.txt");
+    solve_kdv(t_start, t_end, x_start, x_end, 1, "funktion1.txt");
+    nd=1001;
+    nt = 25000;
+    x_start = -5.0;
+    x_end = 45.0;
+    solve_kdv(t_start, t_end, x_start, x_end, 3, "funktion3.txt");
 }

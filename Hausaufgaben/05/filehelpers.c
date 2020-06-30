@@ -170,9 +170,9 @@ void print_table_1dim(char* const filename, double* data, int cols, int rows){
     }
     for(int i=0; i<rows; i++){
         for(int j=0; j<cols-1; j++){
-            fprintf(file_out, "%15.2e\t", data[i*cols+j]);
+            fprintf(file_out, "%15.4lf\t", data[i*cols+j]);
         }
-        fprintf(file_out, "%15.2e\n", data[(i+1)*cols -1]);
+        fprintf(file_out, "%15.4lf\n", data[(i+1)*cols -1]);
     }
 
 }

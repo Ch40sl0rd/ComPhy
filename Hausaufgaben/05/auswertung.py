@@ -36,6 +36,7 @@ ax1.set_ylabel('Abweichung von Standartpegel')
 fig1.legend()
 ax1.grid()
 fig1.savefig('aufgabe10_2_1.png')
+plt.show(fig1)
 plt.close(fig1)
 
 x = np.loadtxt(file2, usecols=0)
@@ -50,6 +51,7 @@ ax2.set_ylabel('Abweichung von Standartpegel')
 ax2.grid()
 fig2.legend()
 fig2.savefig('aufgabe10_2_2.png')
+plt.show(fig2)
 plt.close(fig2)
 
 for i in range(3):
@@ -63,3 +65,34 @@ for i in range(3):
     plt.savefig('aufgabe10_N{0}.png'.format(i+1))
     plt.show()
     plt.close()
+
+for i in range(1,10):
+    x = np.loadtxt('funktion1_{0}.txt'.format(i), usecols=0)
+    t = np.loadtxt('funktion1_{0}.txt'.format(i), usecols=1)
+    plt.plot(x,t, label='N=1,{0}'.format(i))
+plt.xlabel('Ort x')
+plt.ylabel('Abweichung von Normalpegel')
+plt.title('Nicht-ganzzahlige N bei t=1')
+plt.legend()
+plt.grid()
+plt.savefig('aufgabe10_4.png')
+plt.show()
+plt.close()
+
+x = np.loadtxt('ort.txt')
+t = np.loadtxt('zeit.txt')
+u = np.loadtxt('verlauf_funktion3.txt')
+#Wir müssen hier den Background filtern, da sonst die
+#erste Solitone nicht sichtbar ist.
+np.putmask(u, np.abs(u)<1, 0.0)
+np.putmask(u, np.abs(u)<3, u*5)
+#Plotte den Contour-Plot der N=3 Solitonen
+X,T = np.meshgrid(x,t)
+plt.contourf(X,T,u, cmap='Blues')
+plt.colorbar()
+plt.xlabel('Ort x')
+plt.ylabel('Zeit t')
+plt.title('Verlauf der N=3 Lösung')
+plt.savefig('aufgabe10_3_2.png')
+plt.show()
+plt.close()

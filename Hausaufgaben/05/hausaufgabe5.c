@@ -8,6 +8,17 @@
 #include "arrayhelpers.h"
 #include "filehelper.h"
 
+/**
+ *  This function calculates an index for a one dim array out of two input parameters.
+ *  All indiezies exceeding the maximum number of rows or coloums will be treated as beeing
+ *  the maximum row or coloumn.
+ *  \param n: index for row
+ *  \param nt: number of all rows
+ *  \param j: index for coloumn.
+ *  \param nd: number of all coloums.
+ * 
+ *  \return index for a one dim array.
+ * */
 int idx(int n, long nt, int j, long nd){
     if(j>=nd) j=nd; //Behandlung des rechten Randes bzgl außerhalb des Gebiets
     if(j<0) j=0; //Behandlung des rechten Rands in Orts-Richtung
@@ -18,6 +29,21 @@ int idx(int n, long nt, int j, long nd){
     return nd*n + j;
 }
 
+/**
+ *  This function solves the kortweg de vries partial differential equation for solitons with a given N
+ *  
+ *  \param t_start: starting time, has to be 0
+ *  \param t_end: end time for the solution
+ *  \param d: width between two time steps
+ *  \param x_start: starting point for x values, the funktion should be 0 at this point
+ *  \param x_end: end point for x values, the function should be 0 at this point
+ *  \param h: step width for x values
+ *  \param N: parameter for starting values for the kdv-deq
+ *  \param filename1: the value of u(x,t_end) will be printed ount to that file
+ *  \param filename2: the values for all u(x,t) will be printed out to this file, this file can become quite large.
+ * 
+ *  \return None.
+ * */
 void solve_kdv(double t_start, double t_end, double d, double x_start, double x_end, double h, double N, char* const filename1, char* const filename2){
     //Variablen deklarieren
     long nt;
@@ -111,7 +137,7 @@ int main(){
     solve_kdv(t_start, t_end,d, x_start, x_end,h, 2, "funktion2.txt", NULL);
     solve_kdv(t_start, t_end,d, x_start, x_end,h, 1, "funktion1.txt", NULL);
     
-    printf("[main] Berechnung der numerischen Lösung für N=3\n");
+    printf("\n[main] Berechnung der numerischen Lösung für N=3\n");
     printf("[main] Bitte wähle Parameter d und h mit d;h:");
     scanf("%lf;%lf", &d,&h);
 
@@ -119,7 +145,7 @@ int main(){
     x_end = 45.0;
     solve_kdv(t_start, t_end, d,  x_start, x_end, h,  3, "funktion3.txt", "verlauf_funktion3.txt");
     
-    printf("[main] Berechnung der Funktionswerte für nicht-ganzzahlige N\n");
+    printf("\n[main] Berechnung der Funktionswerte für nicht-ganzzahlige N\n");
     x_start = -30.0;
     x_end = 30.0;
     t_start = 0.0; 

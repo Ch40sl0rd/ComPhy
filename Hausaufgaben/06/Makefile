@@ -1,6 +1,6 @@
 # make
-# ./hausaufgabe1
-# Lars Döpper
+# ./hausaufgabe5
+# Lars Döpper; Dirk Knott
 #Compiler für Module und Programme
 CC := gcc -g -ggdb -Wall -Wpedantic -std=c99
 #Linker für fertige Programme
@@ -9,7 +9,7 @@ LD := gcc
 BIBS := -lm -lgsl -lblas
 
 # alle Programmnamen, hier per Hand aufgelistet, muss manuell genändert werden
-PROGRAMS := hausaufgabe5
+PROGRAMS := hausaufgabe6
 
 # alle Quelldateien im momentanen Verzeichnis werden aufgelistest per "wildcard"
 SOURCES := $(wildcard *.c)

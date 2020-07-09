@@ -1,6 +1,6 @@
 // make
-// ./hausaufgabe1
-// Lars Döpper
+// ./hausaufgabe5
+// Lars Döpper; Dirk Knott
 #ifndef FILEHELPERS_h
 #define FILEHELPERS_H
 

@@ -1,6 +1,6 @@
 // make
-// ./hausaufgabe1
-// Lars Döpper
+// ./hausaufgabe5
+// Lars Döpper; Dirk Knott
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
